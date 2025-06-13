@@ -1,0 +1,243 @@
+﻿@{
+    ViewData["Title"] = "Ana Sayfa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Sayfa içeriği buraya gelecek -->
+
+<section class="hero">
+    <br>
+    <br>
+    <br>
+    <h1>Rezervasyon Sistemi</h1>
+    <p>Küçük işletmeler için kolay ve pratik rezervasyon çözümü</p>
+    <p class="hero-subtitle">İstediğiniz gün ve saatte, anında rezervasyon yapın</p>
+</section>
+
+<section class="features">
+    <h2>Neden RezerveHub?</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📅</div>
+            <h3>Kolay Rezervasyon</h3>
+            <p>Müşterileriniz istediği gün ve saatte kolayca rezervasyon yapabilir. Basit ve kullanıcı dostu arayüz ile dakikalar içinde randevu alın.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🏪</div>
+            <h3>Küçük İşletmeler İçin</h3>
+            <p>Berber, kuaför, masaj salonu, doktor muayenehanesi, restoran ve daha birçok küçük işletme için özel olarak tasarlandı.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Anında Onay</h3>
+            <p>Rezervasyonlar anında onaylanır. Müşterileriniz bekleme yaşamaz, siz de zamandan tasarruf edersiniz.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Mobil Uyumlu</h3>
+            <p>Tüm cihazlarda mükemmel çalışır. Müşterileriniz telefon, tablet veya bilgisayardan kolayca rezervasyon yapabilir.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔔</div>
+            <h3>Otomatik Hatırlatma</h3>
+            <p>Randevu yaklaştığında otomatik hatırlatma mesajları gönderilir. Unutulan randevuların önüne geçin.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Yönetim Paneli</h3>
+            <p>Tüm rezervasyonlarınızı tek bir yerden yönetin. Müşteri bilgileri, randevu geçmişi ve raporlara kolayca erişin.</p>
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <h2>İşletmenizi Dijitale Taşıyın</h2>
+    <p>Rezervasyon sistemiyle müşteri memnuniyetinizi artırın, zamandan tasarruf edin</p>
+    <a href="#" class="cta-button">Hemen Başlayın</a>
+</section>
+
+<style>
+    /* Main Content */
+    main {
+        margin-top: 90px;
+        padding: 4rem 0;
+    }
+
+    .hero {
+        text-align: center;
+        color: white;
+        margin-bottom: 4rem;
+    }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.8;
+        animation: fadeInUp 1s ease 0.4s both;
+    }
+
+    /* Features Section */
+    .features {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 3rem;
+        margin: 2rem 0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        animation: fadeInUp 1s ease 0.6s both;
+    }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-card {
+        text-align: center;
+        padding: 2rem;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #667eea;
+    }
+
+    .feature-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: #333;
+    }
+
+    .feature-card p {
+        color: #666;
+        line-height: 1.6;
+    }
+
+    /* CTA Section */
+    .cta {
+        text-align: center;
+        margin: 4rem 0;
+        animation: fadeInUp 1s ease 0.8s both;
+    }
+
+        .cta h2 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .cta p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+    .cta-button {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: bold;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+    /* Responsive */
+    media (max-width: 768px) {
+        .hero h1
+
+    {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+    }
+
+    .features {
+        padding: 2rem;
+    }
+
+        .features h2 {
+            font-size: 2rem;
+        }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    }
+
+    media (max-width: 600px) {
+        .hero h1
+
+    {
+        font-size: 2rem;
+    }
+
+    .features {
+        padding: 1.5rem;
+    }
+
+    }
+</style>
+
+<script>
+    // Add hover effects to feature cards
+    document.querySelectorAll('.feature-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            this.style.color = 'white';
+            this.querySelector('.feature-icon').style.color = 'white';
+            this.querySelector('h3').style.color = 'white';
+            this.querySelector('p').style.color = 'rgba(255, 255, 255, 0.9)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.background = 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)';
+            this.style.color = '';
+            this.querySelector('.feature-icon').style.color = '#667eea';
+            this.querySelector('h3').style.color = '#333';
+            this.querySelector('p').style.color = '#666';
+        });
+    });
+</script>

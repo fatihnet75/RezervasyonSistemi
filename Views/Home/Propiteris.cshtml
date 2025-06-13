@@ -1,0 +1,624 @@
+﻿@{
+    ViewData["Title"] = "Özellikler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RezerveHub - Özellikler</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 60px 0;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #fff, #a8edea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        keyframes glow {
+            from
+
+        {
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.3));
+        }
+
+        to {
+            filter: drop-shadow(0 0 30px rgba(255,255,255,0.5));
+        }
+
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeInUp 1s ease-out 0.5s both;
+        }
+
+        keyframes fadeInUp {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .feature-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            }
+
+            .feature-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 5px;
+                background: linear-gradient(45deg, #667eea, #764ba2);
+                transform: scaleX(0);
+                transition: transform 0.3s ease;
+            }
+
+            .feature-card:hover::before {
+                transform: scaleX(1);
+            }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        keyframes bounce {
+            0%, 20%, 50%, 80%, 100%
+
+        {
+            transform: translateY(0);
+        }
+
+        40% {
+            transform: translateY(-10px);
+        }
+
+        60% {
+            transform: translateY(-5px);
+        }
+
+        }
+
+        .feature-title {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .feature-description {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+            .feature-list li {
+                position: relative;
+                padding: 8px 0 8px 30px;
+                color: #555;
+                transition: color 0.3s ease;
+            }
+
+                .feature-list li::before {
+                    content: '✓';
+                    position: absolute;
+                    left: 0;
+                    top: 8px;
+                    color: #667eea;
+                    font-weight: bold;
+                    font-size: 1.2rem;
+                }
+
+                .feature-list li:hover {
+                    color: #667eea;
+                }
+
+        .user-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .user-type-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+            .user-type-card:hover {
+                transform: scale(1.05);
+            }
+
+            .user-type-card::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+                transform: rotate(45deg);
+                transition: all 0.3s ease;
+                opacity: 0;
+            }
+
+            .user-type-card:hover::before {
+                animation: shine 0.6s ease-in-out;
+            }
+
+        keyframes shine {
+            0%
+
+        {
+            transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            opacity: 0;
+        }
+
+        50% {
+            opacity: 1;
+        }
+
+        100% {
+            transform: translateX(100%) translateY(100%) rotate(45deg);
+            opacity: 0;
+        }
+
+        }
+
+        .user-type-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .user-type-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .user-type-features {
+            list-style: none;
+            padding: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+            .user-type-features li {
+                padding: 8px 0;
+                position: relative;
+                padding-left: 25px;
+            }
+
+                .user-type-features li::before {
+                    content: '→';
+                    position: absolute;
+                    left: 0;
+                    color: rgba(255,255,255,0.8);
+                    font-weight: bold;
+                }
+
+        .benefits-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 50px 40px;
+            margin: 40px 0;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .benefits-title {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+            .benefits-title::after {
+                content: '';
+                position: absolute;
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 4px;
+                background: linear-gradient(45deg, #667eea, #764ba2);
+                border-radius: 2px;
+            }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .benefit-item {
+            padding: 20px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+            .benefit-item:hover {
+                transform: translateY(-5px);
+                border-color: #667eea;
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            }
+
+        .benefit-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .benefit-text {
+            font-size: 1.1rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .demo-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 60px 40px;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            margin: 40px 0;
+        }
+
+            .demo-section::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="3" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="70" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            }
+
+        .demo-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .demo-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .demo-text {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .demo-button {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin: 0 10px 10px 0;
+        }
+
+            .demo-button:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+                background: #f8f9ff;
+            }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+            .shape:nth-child(1) {
+                top: 20%;
+                left: 10%;
+                animation-delay: 0s;
+            }
+
+            .shape:nth-child(2) {
+                top: 60%;
+                right: 10%;
+                animation-delay: 2s;
+            }
+
+            .shape:nth-child(3) {
+                top: 40%;
+                left: 60%;
+                animation-delay: 4s;
+            }
+
+        keyframes float {
+            0%, 100%
+
+        {
+            transform: translateY(0px) rotate(0deg);
+        }
+
+        50% {
+            transform: translateY(-20px) rotate(180deg);
+        }
+
+        }
+
+        media (max-width: 768px) {
+            .hero-title
+
+        {
+            font-size: 2.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .feature-card {
+            padding: 30px 20px;
+        }
+
+        .benefits-section {
+            padding: 40px 20px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape">📅</div>
+        <div class="shape">⚡</div>
+        <div class="shape">🎯</div>
+    </div>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1 class="hero-title">Güçlü Özellikler</h1>
+            <p class="hero-subtitle">RezerveHub ile işletmenizi dijital çağa taşıyın. Kolay kullanım, güçlü özellikler.</p>
+        </div>
+
+        <!-- Main Features -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3 class="feature-title">Kolay Rezervasyon Sistemi</h3>
+                <p class="feature-description">Müşterileriniz 7/24 online rezervasyon yapabilir. Basit, hızlı ve kullanıcı dostu arayüz.</p>
+                <ul class="feature-list">
+                    <li>Anlık rezervasyon onayı</li>
+                    <li>Müsaitlik durumu kontrolü</li>
+                    <li>Mobil uyumlu tasarım</li>
+                    <li>Çoklu dil desteği</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Rezervasyon Yönetimi</h3>
+                <p class="feature-description">Tüm rezervasyonlarınızı tek yerden yönetin. Ekleme, düzenleme ve silme işlemlerini kolayca yapın.</p>
+                <ul class="feature-list">
+                    <li>Rezervasyon takvimi görünümü</li>
+                    <li>Hızlı ekleme/düzenleme</li>
+                    <li>Toplu işlem desteği</li>
+                    <li>Gelişmiş filtreleme</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📧</div>
+                <h3 class="feature-title">Otomatik Bildirimler</h3>
+                <p class="feature-description">Müşterilerinize otomatik e-posta bildirimleri gönderin. Hatırlatma ve onay mesajları.</p>
+                <ul class="feature-list">
+                    <li>Rezervasyon onay e-postası</li>
+                    <li>Hatırlatma mesajları</li>
+                    <li>İptal bildirimleri</li>
+                    <li>Özelleştirilebilir şablonlar</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⚙️</div>
+                <h3 class="feature-title">İşletme Yönetimi</h3>
+                <p class="feature-description">İşletme bilgilerinizi yönetin, çalışma saatlerini ayarlayın ve hizmetlerinizi tanımlayın.</p>
+                <ul class="feature-list">
+                    <li>Çalışma saati ayarları</li>
+                    <li>Hizmet tanımları</li>
+                    <li>Personel yönetimi</li>
+                    <li>Fiyat listesi</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3 class="feature-title">Raporlama & Analiz</h3>
+                <p class="feature-description">İşletmenizin performansını takip edin. Detaylı raporlar ve analizler.</p>
+                <ul class="feature-list">
+                    <li>Rezervasyon istatistikleri</li>
+                    <li>Gelir raporları</li>
+                    <li>Müşteri analizi</li>
+                    <li>Trend grafikleri</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">Güvenlik & Yedekleme</h3>
+                <p class="feature-description">Verileriniz güvende. SSL şifreleme ve otomatik yedekleme sistemi.</p>
+                <ul class="feature-list">
+                    <li>SSL sertifikası</li>
+                    <li>Günlük otomatik yedek</li>
+                    <li>KVKK uyumluluğu</li>
+                    <li>Güvenli veri saklama</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- User Types -->
+        <div class="user-types">
+            <div class="user-type-card">
+                <div class="user-type-icon">👤</div>
+                <h3 class="user-type-title">Müşteri Paneli</h3>
+                <ul class="user-type-features">
+                    <li>Hızlı rezervasyon oluşturma</li>
+                    <li>Rezervasyonlarını görüntüleme</li>
+                    <li>İptal ve düzenleme imkanı</li>
+                    <li>E-posta bildirim alma</li>
+                    <li>Geçmiş rezervasyon listesi</li>
+                </ul>
+            </div>
+
+            <div class="user-type-card">
+                <div class="user-type-icon">👔</div>
+                <h3 class="user-type-title">İşletme Paneli</h3>
+                <ul class="user-type-features">
+                    <li>Tüm rezervasyonları görüntüleme</li>
+                    <li>Manuel rezervasyon ekleme</li>
+                    <li>Rezervasyon onaylama/iptal</li>
+                    <li>Müşteri bilgilerini yönetme</li>
+                    <li>Detaylı raporlama sistemi</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Benefits Section -->
+        <div class="benefits-section">
+            <h2 class="benefits-title">Neden RezerveHub?</h2>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <span class="benefit-icon">⚡</span>
+                    <p class="benefit-text">Hızlı Kurulum</p>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-icon">💰</span>
+                    <p class="benefit-text">Uygun Fiyat</p>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-icon">📞</span>
+                    <p class="benefit-text">7/24 Destek</p>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-icon">🔄</span>
+                    <p class="benefit-text">Sürekli Güncelleme</p>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-icon">📱</span>
+                    <p class="benefit-text">Mobil Uyumlu</p>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-icon">🌐</span>
+                    <p class="benefit-text">Cloud Tabanlı</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
