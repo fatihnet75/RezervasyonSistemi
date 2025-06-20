@@ -2,9 +2,9 @@
 
 namespace RezervasyonSistemi.Controllers
 {
-    public class Busnies : Controller
+    public class RezervasyonController : Controller
     {
-        public IActionResult login()
+        public IActionResult Index()
         {
             return View();
         }

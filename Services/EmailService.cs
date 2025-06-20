@@ -20,9 +20,9 @@ public class EmailService : IEmailService
 
     public async Task SendEmailAsync(string to, string subject, string body)
     {
-        var smtpSettings = _configuration.GetSection("SmtpSettings");
-        var smtpServer = smtpSettings["Server"];
-        var smtpPort = int.Parse(smtpSettings["Port"]);
+        var smtpSettings = _configuration.GetSection("Email");
+        var smtpServer = smtpSettings["SmtpServer"];
+        var smtpPort = int.Parse(smtpSettings["SmtpPort"]);
         var smtpUsername = smtpSettings["Username"];
         var smtpPassword = smtpSettings["Password"];
 

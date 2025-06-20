@@ -1,0 +1,855 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Şifremi Unuttum - RezerveHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 0;
+        }
+
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            letter-spacing: -1px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(135deg, #ff6b6b, #667eea, #764ba2);
+            border-radius: 2px;
+            opacity: 0.8;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Main Content */
+        main {
+            padding-top: 120px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Background Animation */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape-1 {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            top: 60%;
+            left: 80%;
+            animation-delay: 2s;
+        }
+
+        .shape-3 {
+            top: 80%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        .shape-4 {
+            top: 10%;
+            left: 70%;
+            animation-delay: 1s;
+            width: 60px;
+            height: 60px;
+        }
+
+        .shape-5 {
+            top: 70%;
+            left: 60%;
+            animation-delay: 3s;
+            width: 80px;
+            height: 80px;
+        }
+
+        keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        /* Reset Card */
+        .reset-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            animation: slideUp 0.8s ease;
+        }
+
+        .reset-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(135deg, #ff6b6b, #667eea, #764ba2);
+            border-radius: 25px 25px 0 0;
+        }
+
+        .reset-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .reset-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .reset-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .reset-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            background: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #999;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .step.completed {
+            background: #32cd32;
+            color: white;
+            border-color: #32cd32;
+        }
+
+        /* Form Styles */
+        .form-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: #999;
+        }
+
+        .form-group.focused .input-icon {
+            color: #667eea;
+        }
+
+        /* Button Styles */
+        .reset-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .reset-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .reset-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Error/Success Messages */
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        /* Step Content */
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        /* Verification Code Input */
+        .verification-input {
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 0.5rem;
+            font-weight: 600;
+        }
+
+        /* Password Strength */
+        .password-strength {
+            margin-top: 0.5rem;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+        }
+
+        .strength-text {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Back to Login */
+        .back-to-login {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .back-to-login a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-to-login a:hover {
+            color: #764ba2;
+        }
+
+        /* Resend Code */
+        .resend-code {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .resend-code button {
+            background: none;
+            border: none;
+            color: #667eea;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .resend-code button:hover {
+            color: #764ba2;
+        }
+
+        keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="/" class="logo">RezerveHub</a>
+            <a href="/Custommer/Login" class="back-btn">
+                <span>←</span> Giriş Sayfasına Dön
+            </a>
+        </nav>
+    </header>
+
+    <div class="bg-animation">
+        <div class="floating-shapes shape-1"></div>
+        <div class="floating-shapes shape-2"></div>
+        <div class="floating-shapes shape-3"></div>
+        <div class="floating-shapes shape-4"></div>
+        <div class="floating-shapes shape-5"></div>
+    </div>
+
+    <main>
+        <div class="reset-container">
+            <div class="reset-header">
+                <div class="reset-icon">🔑</div>
+                <h1 class="reset-title">Şifremi Unuttum</h1>
+                <p class="reset-subtitle">Şifrenizi sıfırlamak için e-posta adresinizi giriniz</p>
+            </div>
+
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="step active" id="step1">1</div>
+                <div class="step" id="step2">2</div>
+                <div class="step" id="step3">3</div>
+            </div>
+
+            <!-- Step 1: Enter Email -->
+            <div class="step-content active" id="step1Content">
+                <form id="emailForm">
+                    <div class="form-group">
+                        <span class="input-icon">📧</span>
+                        <input type="email" name="email" class="form-input" placeholder="E-posta adresiniz" required>
+                    </div>
+
+                    <button type="submit" class="reset-btn" id="sendCodeBtn">
+                        <div class="loading" id="sendCodeLoading"></div>
+                        <span id="sendCodeBtnText">Şifre Sıfırlama Kodu Gönder</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Step 2: Enter Verification Code -->
+            <div class="step-content" id="step2Content">
+                <p style="text-align: center; margin-bottom: 1.5rem; color: #666;">
+                    E-posta adresinize gönderilen 6 haneli doğrulama kodunu giriniz.
+                </p>
+                
+                <form id="verificationForm">
+                    <input type="hidden" id="resetId" name="resetId">
+                    <input type="hidden" id="resetEmail" name="resetEmail">
+                    
+                    <div class="form-group">
+                        <input type="text" name="resetCode" id="resetCode" 
+                               class="form-input verification-input" 
+                               placeholder="000000" maxlength="6" required>
+                    </div>
+
+                    <button type="submit" class="reset-btn" id="verifyCodeBtn">
+                        <div class="loading" id="verifyCodeLoading"></div>
+                        <span id="verifyCodeBtnText">Kodu Doğrula</span>
+                    </button>
+
+                    <div class="resend-code">
+                        <button type="button" onclick="resendResetCode()">
+                            Doğrulama kodunu tekrar gönder
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Step 3: Enter New Password -->
+            <div class="step-content" id="step3Content">
+                <p style="text-align: center; margin-bottom: 1.5rem; color: #666;">
+                    Yeni şifrenizi belirleyiniz.
+                </p>
+                
+                <form id="passwordForm">
+                    <input type="hidden" id="finalResetId" name="finalResetId">
+                    
+                    <div class="form-group">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" name="newPassword" id="newPassword" 
+                               class="form-input" placeholder="Yeni şifre" required>
+                    </div>
+
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div class="strength-text" id="strengthText"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" name="confirmPassword" id="confirmPassword" 
+                               class="form-input" placeholder="Şifreyi tekrar girin" required>
+                    </div>
+
+                    <button type="submit" class="reset-btn" id="resetPasswordBtn">
+                        <div class="loading" id="resetPasswordLoading"></div>
+                        <span id="resetPasswordBtnText">Şifreyi Sıfırla</span>
+                    </button>
+                </form>
+            </div>
+
+            <div class="back-to-login">
+                <a href="/Custommer/Login">← Giriş sayfasına dön</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        // Step 1: Send reset code
+        document.getElementById('emailForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.querySelector('input[name="email"]').value;
+            const sendCodeBtn = document.getElementById('sendCodeBtn');
+            const sendCodeLoading = document.getElementById('sendCodeLoading');
+            const sendCodeBtnText = document.getElementById('sendCodeBtnText');
+            
+            // Show loading
+            sendCodeLoading.style.display = 'inline-block';
+            sendCodeBtnText.textContent = 'Kod gönderiliyor...';
+            sendCodeBtn.disabled = true;
+            
+            try {
+                const formData = new FormData();
+                formData.append('email', email);
+                
+                const response = await fetch('/Custommer/SendPasswordResetCode', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Store reset data
+                    document.getElementById('resetId').value = result.resetId;
+                    document.getElementById('resetEmail').value = result.email;
+                    document.getElementById('finalResetId').value = result.resetId;
+                    
+                    // Move to step 2
+                    goToStep(2);
+                    
+                    // Focus on verification code input
+                    setTimeout(() => {
+                        document.getElementById('resetCode').focus();
+                    }, 300);
+                } else {
+                    alert(result.message || 'Şifre sıfırlama kodu gönderilemedi.');
+                }
+            } catch (error) {
+                alert('Bir hata oluştu. Lütfen tekrar deneyiniz.');
+            } finally {
+                sendCodeLoading.style.display = 'none';
+                sendCodeBtnText.textContent = 'Şifre Sıfırlama Kodu Gönder';
+                sendCodeBtn.disabled = false;
+            }
+        });
+
+        // Step 2: Verify code
+        document.getElementById('verificationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const resetId = document.getElementById('resetId').value;
+            const resetCode = document.getElementById('resetCode').value;
+            const verifyCodeBtn = document.getElementById('verifyCodeBtn');
+            const verifyCodeLoading = document.getElementById('verifyCodeLoading');
+            const verifyCodeBtnText = document.getElementById('verifyCodeBtnText');
+            
+            if (!resetCode || resetCode.length !== 6) {
+                alert('Lütfen 6 haneli doğrulama kodunu giriniz.');
+                return;
+            }
+            
+            // Show loading
+            verifyCodeLoading.style.display = 'inline-block';
+            verifyCodeBtnText.textContent = 'Doğrulanıyor...';
+            verifyCodeBtn.disabled = true;
+            
+            try {
+                const formData = new FormData();
+                formData.append('resetId', resetId);
+                formData.append('resetCode', resetCode);
+                
+                const response = await fetch('/Custommer/VerifyPasswordResetCode', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Move to step 3
+                    goToStep(3);
+                    
+                    // Focus on new password input
+                    setTimeout(() => {
+                        document.getElementById('newPassword').focus();
+                    }, 300);
+                } else {
+                    alert(result.message || 'Geçersiz doğrulama kodu.');
+                }
+            } catch (error) {
+                alert('Bir hata oluştu. Lütfen tekrar deneyiniz.');
+            } finally {
+                verifyCodeLoading.style.display = 'none';
+                verifyCodeBtnText.textContent = 'Kodu Doğrula';
+                verifyCodeBtn.disabled = false;
+            }
+        });
+
+        // Step 3: Reset password
+        document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const resetId = document.getElementById('finalResetId').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+            const resetPasswordLoading = document.getElementById('resetPasswordLoading');
+            const resetPasswordBtnText = document.getElementById('resetPasswordBtnText');
+            
+            if (newPassword !== confirmPassword) {
+                alert('Şifreler eşleşmiyor.');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                alert('Şifre en az 6 karakter olmalıdır.');
+                return;
+            }
+            
+            // Show loading
+            resetPasswordLoading.style.display = 'inline-block';
+            resetPasswordBtnText.textContent = 'Şifre sıfırlanıyor...';
+            resetPasswordBtn.disabled = true;
+            
+            try {
+                const formData = new FormData();
+                formData.append('resetId', resetId);
+                formData.append('newPassword', newPassword);
+                
+                const response = await fetch('/Custommer/ResetPassword', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Şifreniz başarıyla sıfırlandı! Giriş sayfasına yönlendiriliyorsunuz...');
+                    window.location.href = '/Custommer/Login';
+                } else {
+                    alert(result.message || 'Şifre sıfırlanırken bir hata oluştu.');
+                }
+            } catch (error) {
+                alert('Bir hata oluştu. Lütfen tekrar deneyiniz.');
+            } finally {
+                resetPasswordLoading.style.display = 'none';
+                resetPasswordBtnText.textContent = 'Şifreyi Sıfırla';
+                resetPasswordBtn.disabled = false;
+            }
+        });
+
+        // Resend reset code
+        async function resendResetCode() {
+            const email = document.getElementById('resetEmail').value;
+            if (!email) return;
+            
+            try {
+                const response = await fetch('/Custommer/ResendPasswordResetCode', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Şifre sıfırlama kodu tekrar gönderildi. E-postanızı kontrol ediniz.');
+                } else {
+                    alert(result.message || 'Şifre sıfırlama kodu gönderilemedi.');
+                }
+            } catch (error) {
+                alert('Bir hata oluştu. Lütfen tekrar deneyiniz.');
+            }
+        }
+
+        // Navigation functions
+        function goToStep(step) {
+            // Hide all step content
+            for (let i = 1; i <= totalSteps; i++) {
+                document.getElementById(`step${i}Content`).classList.remove('active');
+                document.getElementById(`step${i}`).classList.remove('active', 'completed');
+            }
+            
+            // Show current step content
+            document.getElementById(`step${step}Content`).classList.add('active');
+            
+            // Update progress steps
+            for (let i = 1; i <= totalSteps; i++) {
+                if (i < step) {
+                    document.getElementById(`step${i}`).classList.add('completed');
+                } else if (i === step) {
+                    document.getElementById(`step${i}`).classList.add('active');
+                }
+            }
+            
+            currentStep = step;
+        }
+
+        // Password strength checker
+        document.getElementById('newPassword').addEventListener('input', function() {
+            const password = this.value;
+            const strengthFill = document.getElementById('strengthFill');
+            const strengthText = document.getElementById('strengthText');
+            
+            let strength = 0;
+            let strengthLabel = '';
+            
+            if (password.length >= 6) strength += 25;
+            if (password.match(/[a-z]/)) strength += 25;
+            if (password.match(/[A-Z]/)) strength += 25;
+            if (password.match(/[0-9]/)) strength += 25;
+            
+            strengthFill.style.width = strength + '%';
+            
+            if (strength < 50) {
+                strengthLabel = 'Zayıf';
+                strengthFill.style.background = '#ff6b6b';
+            } else if (strength < 75) {
+                strengthLabel = 'Orta';
+                strengthFill.style.background = '#ffa500';
+            } else {
+                strengthLabel = 'Güçlü';
+                strengthFill.style.background = '#32cd32';
+            }
+            
+            strengthText.textContent = password.length > 0 ? `Şifre Gücü: ${strengthLabel}` : '';
+        });
+
+        // Verification code input formatting
+        document.getElementById('resetCode').addEventListener('input', function(e) {
+            // Only allow numbers
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        // Input focus animations
+        const inputs = document.querySelectorAll('.form-input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+    </script>
+</body>
+</html>

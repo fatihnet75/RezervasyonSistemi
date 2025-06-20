@@ -1,5 +1,687 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İşletme Girişi - RezerveHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 0;
+        }
+
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            letter-spacing: -1px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+            .logo::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                width: 100%;
+                height: 3px;
+                background: linear-gradient(135deg, #ff6b6b, #667eea, #764ba2);
+                border-radius: 2px;
+                opacity: 0.8;
+            }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+            .back-btn:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            }
+
+        /* Main Content */
+        main {
+            padding-top: 120px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Background Animation */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape-1 {
+            top: 15%;
+            left: 15%;
+            width: 120px;
+            height: 120px;
+            border-radius: 20px;
+            animation-delay: 0s;
+            transform: rotate(45deg);
+        }
+
+        .shape-2 {
+            top: 70%;
+            left: 75%;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            animation-delay: 2s;
+        }
+
+        .shape-3 {
+            top: 85%;
+            left: 25%;
+            width: 100px;
+            height: 100px;
+            border-radius: 15px;
+            animation-delay: 4s;
+            transform: rotate(30deg);
+        }
+
+        keyframes float {
+            0%, 100%
+
+        {
+            transform: translateY(0px) rotate(var(--rotation, 0deg));
+        }
+
+        50% {
+            transform: translateY(-25px) rotate(calc(var(--rotation, 0deg) + 180deg));
+        }
+
+        }
+
+        /* Login Card */
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            animation: slideUp 0.8s ease;
+        }
+
+            .login-container::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 5px;
+                background: linear-gradient(135deg, #ff6b6b, #ee5a52, #ff8a80);
+                border-radius: 25px 25px 0 0;
+            }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .business-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+            animation: businessPulse 2s infinite;
+            position: relative;
+        }
+
+            .business-icon::before {
+                content: '';
+                position: absolute;
+                top: -5px;
+                left: -5px;
+                right: -5px;
+                bottom: -5px;
+                background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+                border-radius: 25px;
+                z-index: -1;
+                opacity: 0.3;
+                animation: businessGlow 2s infinite;
+            }
+
+        keyframes businessPulse {
+            0%
+
+        {
+            transform: scale(1);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+        }
+
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.6);
+        }
+
+        100% {
+            transform: scale(1);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+        }
+
+        }
+
+        keyframes businessGlow {
+            0%, 100%
+
+        {
+            transform: scale(1);
+            opacity: 0.3;
+        }
+
+        50% {
+            transform: scale(1.1);
+            opacity: 0.6;
+        }
+
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Form Styles */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid rgba(255, 107, 107, 0.2);
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+            .form-input:focus {
+                outline: none;
+                border-color: #ff6b6b;
+                box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+                background: white;
+            }
+
+            .form-input::placeholder {
+                color: #999;
+            }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ff6b6b;
+            font-size: 1.2rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+            .password-toggle:hover {
+                color: #ee5a52;
+                transform: translateY(-50%) scale(1.1);
+            }
+
+        .login-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+            .login-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: left 0.6s ease;
+            }
+
+            .login-btn:hover::before {
+                left: 100%;
+            }
+
+            .login-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 30px rgba(255, 107, 107, 0.5);
+            }
+
+            .login-btn:active {
+                transform: translateY(0);
+            }
+
+        /* Additional Options */
+        .login-options {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .forgot-password {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+
+            .forgot-password:hover {
+                color: #ee5a52;
+                transform: translateY(-1px);
+            }
+
+        .divider {
+            position: relative;
+            text-align: center;
+            margin: 2rem 0;
+            color: #999;
+        }
+
+            .divider::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 0;
+                right: 0;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, #ddd, transparent);
+            }
+
+            .divider span {
+                background: rgba(255, 255, 255, 0.95);
+                padding: 0 1rem;
+            }
+
+        .register-section {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 107, 107, 0.2);
+        }
+
+        .register-text {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .register-btn {
+            background: rgba(255, 107, 107, 0.1);
+            color: #ff6b6b;
+            padding: 0.8rem 2rem;
+            border: 2px solid #ff6b6b;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+            .register-btn:hover {
+                background: #ff6b6b;
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            }
+
+        /* Business Features */
+        .business-features {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 107, 107, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .features-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+        }
+
+        .features-list {
+            font-size: 0.8rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Animations */
+        keyframes slideUp {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        /* Responsive */
+        media (max-width: 768px) {
+            .login-container
+
+        {
+            padding: 2rem;
+            margin: 1rem;
+            max-width: none;
+        }
+
+        .login-title {
+            font-size: 1.8rem;
+        }
+
+        .business-icon {
+            width: 70px;
+            height: 70px;
+            font-size: 2rem;
+        }
+
+        }
+
+        media (max-width: 480px) {
+            main
+
+        {
+            padding-top: 100px;
+        }
+
+        .login-container {
+            padding: 1.5rem;
+        }
+
+        .form-input {
+            padding: 0.8rem 0.8rem 0.8rem 2.5rem;
+        }
+
+        .input-icon {
+            left: 0.8rem;
+        }
+
+        .password-toggle {
+            right: 0.8rem;
+        }
+
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        keyframes spin {
+            0%
+
+        {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="/" class="logo">RezerveHub</a>
+            <a href="/" class="back-btn">
+                <span>←</span> Ana Sayfaya Dön
+            </a>
+        </nav>
+    </header>
+
+    <div class="bg-animation">
+        <div class="floating-shapes shape-1" style="--rotation: 45deg;"></div>
+        <div class="floating-shapes shape-2" style="--rotation: 0deg;"></div>
+        <div class="floating-shapes shape-3" style="--rotation: 30deg;"></div>
+    </div>
+
+    <main>
+        <div class="login-container">
+            <div class="login-header">
+                <div class="business-icon">🏢</div>
+                <h1 class="login-title">İşletme Girişi</h1>
+                <p class="login-subtitle">İşletme panelinize giriş yapın ve rezervasyonlarınızı yönetin</p>
+            </div>
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="error-message">@TempData["Error"]</div>
+            }
+            @if (TempData["Warning"] != null)
+            {
+                <div class="warning-message">@TempData["Warning"]</div>
+            }
+            @if (TempData["Success"] != null)
+            {
+                <div class="success-message">@TempData["Success"]</div>
+            }
+
+            <form class="login-form" id="loginForm" method="post" action="/Busnies/Login">
+                <div class="form-group">
+                    <span class="input-icon">📧</span>
+                    <input type="email" name="email" class="form-input" placeholder="İşletme e-posta adresiniz" required>
+                </div>
+
+                <div class="form-group">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" name="password" class="form-input" id="password" placeholder="İşletme şifreniz" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
+                </div>
+
+                <div class="business-features">
+                    <div class="features-title">✨ İşletme Paneli Özellikleri:</div>
+                    <div class="features-list">
+                        • Rezervasyon yönetimi • Müşteri takibi • Gelir raporları • Kapasite planlama
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <div class="loading" id="loading"></div>
+                    <span id="btnText">İşletme Paneline Giriş</span>
+                </button>
+            </form>
+
+            <div class="login-options">
+                <a href="/Busnies/ForgtPasword" class="forgot-password">🔑 İşletme Şifremi Unuttum</a>
+                
+                <div class="divider">
+                    <span>veya</span>
+                </div>
+
+                <div class="register-section">
+                    <p class="register-text">İşletmenizi henüz kaydetmediniz mi?</p>
+                    <a href="/Busnies/BusniesSave" class="register-btn">🚀 İşletme Kaydı Oluştur</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Password toggle functionality
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.querySelector('.password-toggle');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        }
+
+        // Form submission with loading animation
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const loading = document.getElementById('loading');
+            const btnText = document.getElementById('btnText');
+            const submitBtn = document.querySelector('.login-btn');
+
+            // Show loading animation
+            loading.style.display = 'inline-block';
+            btnText.textContent = 'Giriş yapılıyor...';
+            submitBtn.disabled = true;
+
+            // Let the form submit naturally to the controller
+            // The controller will handle the redirect to BusniesOpenController1/Index
+        });
+
+        // Input focus animations
+        const inputs = document.querySelectorAll('.form-input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+
+        // Enter key support
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+            }
+        });
+
+        // Business icon click animation
+        document.querySelector('.business-icon').addEventListener('click', function() {
+            this.style.animation = 'none';
+            setTimeout(() => {
+                this.style.animation = 'businessPulse 2s infinite';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

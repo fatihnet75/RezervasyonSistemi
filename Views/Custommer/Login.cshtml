@@ -513,15 +513,34 @@
                 <p class="login-subtitle">Hesabınıza giriş yapın ve rezervasyonlarınızı yönetin</p>
             </div>
 
-            <form class="login-form" id="loginForm">
+            <form class="login-form" id="loginForm" method="post" action="/Custommer/Login">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success" style="background: #d4edda; color: #155724; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #c3e6cb;">
+                        @TempData["Success"]
+                    </div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
+                        @TempData["Error"]
+                    </div>
+                }
+                @if (TempData["Warning"] != null)
+                {
+                    <div class="alert alert-warning" style="background: #fff3cd; color: #856404; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #ffeaa7;">
+                        @TempData["Warning"]
+                    </div>
+                }
+
                 <div class="form-group">
                     <span class="input-icon">📧</span>
-                    <input type="email" class="form-input" placeholder="E-posta adresiniz" required>
+                    <input type="email" name="email" class="form-input" placeholder="E-posta adresiniz" required>
                 </div>
 
                 <div class="form-group">
                     <span class="input-icon">🔒</span>
-                    <input type="password" class="form-input" id="password" placeholder="Şifreniz" required>
+                    <input type="password" name="password" class="form-input" id="password" placeholder="Şifreniz" required>
                     <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
                 </div>
 
@@ -532,7 +551,7 @@
             </form>
 
             <div class="login-options">
-                <a href="/Account/ForgotPassword" class="forgot-password">🔑 Şifremi Unuttum</a>
+                <a href="/Custommer/ForgotPasword" class="forgot-password">🔑 Şifremi Unuttum</a>
 
                 <div class="divider">
                     <span>veya</span>
@@ -540,7 +559,7 @@
 
                 <div class="register-section">
                     <p class="register-text">Henüz hesabınız yok mu?</p>
-                    <a href="/Account/CustomerRegister" class="register-btn">✨ Yeni Hesap Oluştur</a>
+                    <a href="/Custommer/CustommerSave" class="register-btn">✨ Yeni Hesap Oluştur</a>
                 </div>
             </div>
         </div>
@@ -563,7 +582,31 @@
 
         // Form submission with loading animation
         document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+            const emailInput = document.querySelector('input[name="email"]');
+            const passwordInput = document.querySelector('input[name="password"]');
+            
+            // Basic validation
+            if (!emailInput.value.trim()) {
+                alert('Lütfen e-posta adresinizi giriniz.');
+                emailInput.focus();
+                e.preventDefault();
+                return;
+            }
+            
+            if (!passwordInput.value.trim()) {
+                alert('Lütfen şifrenizi giriniz.');
+                passwordInput.focus();
+                e.preventDefault();
+                return;
+            }
+            
+           
+            if (!emailRegex.test(emailInput.value)) {
+                alert('Lütfen geçerli bir e-posta adresi giriniz.');
+                emailInput.focus();
+                e.preventDefault();
+                return;
+            }
 
             const loading = document.getElementById('loading');
             const btnText = document.getElementById('btnText');
@@ -574,16 +617,8 @@
             btnText.textContent = 'Giriş yapılıyor...';
             submitBtn.disabled = true;
 
-            // Simulate API call (replace with actual login logic)
-            setTimeout(() => {
-                // Reset button state
-                loading.style.display = 'none';
-                btnText.textContent = 'Giriş Yap';
-                submitBtn.disabled = false;
-
-                // Here you would typically redirect to dashboard or show success message
-                alert('Giriş başarılı! (Demo)');
-            }, 2000);
+            // Let the form submit naturally to the controller
+            // The controller will handle the redirect to Rezervasyon/Index
         });
 
         // Input focus animations

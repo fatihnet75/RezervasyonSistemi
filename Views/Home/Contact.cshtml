@@ -1,6 +1,5 @@
-﻿@model RezervasyonSistemi.Models.ContactFormModel
-@{
-    ViewData["Title"] = "İletişim";
+﻿@{
+    ViewData["Title"] = "Özellikler";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -539,35 +538,24 @@
             <!-- Contact Form -->
             <div class="contact-form">
                 <h2 class="form-title">Bize Yazın</h2>
-                @if (TempData["SuccessMessage"] != null)
-                {
-                    <div style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
-                        <strong>Başarılı!</strong> @TempData["SuccessMessage"]
-                    </div>
-                }
-                <form asp-action="Contact" asp-controller="Home" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    
+                <form id="contactForm">
                     <div class="form-group">
-                        <input asp-for="Name" type="text" placeholder=" " required>
-                        <label asp-for="Name">Ad Soyad</label>
-                        <span asp-validation-for="Name" class="text-danger"></span>
+                        <input type="text" id="name" name="name" placeholder=" " required>
+                        <label for="name">Ad Soyad</label>
                     </div>
 
                     <div class="form-group">
-                        <input asp-for="Email" type="email" placeholder=" " required>
-                        <label asp-for="Email">E-posta Adresi</label>
-                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <input type="email" id="email" name="email" placeholder=" " required>
+                        <label for="email">E-posta Adresi</label>
                     </div>
 
                     <div class="form-group">
-                        <input asp-for="Phone" type="tel" placeholder=" ">
-                        <label asp-for="Phone">Telefon Numarası</label>
-                        <span asp-validation-for="Phone" class="text-danger"></span>
+                        <input type="tel" id="phone" name="phone" placeholder=" ">
+                        <label for="phone">Telefon Numarası</label>
                     </div>
 
                     <div class="form-group">
-                        <select asp-for="Subject" required>
+                        <select id="subject" name="subject" required>
                             <option value="">Konu Seçin</option>
                             <option value="demo">Demo Talebi</option>
                             <option value="pricing">Fiyat Bilgisi</option>
@@ -575,14 +563,12 @@
                             <option value="partnership">İş Ortaklığı</option>
                             <option value="other">Diğer</option>
                         </select>
-                        <label asp-for="Subject">Konu</label>
-                        <span asp-validation-for="Subject" class="text-danger"></span>
+                        <label for="subject">Konu</label>
                     </div>
 
                     <div class="form-group">
-                        <textarea asp-for="Message" placeholder=" " required></textarea>
-                        <label asp-for="Message">Mesajınız</label>
-                        <span asp-validation-for="Message" class="text-danger"></span>
+                        <textarea id="message" name="message" placeholder=" " required></textarea>
+                        <label for="message">Mesajınız</label>
                     </div>
 
                     <button type="submit" class="submit-btn">Mesaj Gönder</button>
@@ -759,19 +745,3 @@
     </script>
 </body>
 </html>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script>
-        // Form label animations
-        document.querySelectorAll('.form-group input, .form-group textarea, .form-group select').forEach(input => {
-            input.addEventListener('input', function() {
-                if (this.value !== '') {
-                    this.classList.add('has-value');
-                } else {
-                    this.classList.remove('has-value');
-                }
-            });
-        });
-    </script>
-}

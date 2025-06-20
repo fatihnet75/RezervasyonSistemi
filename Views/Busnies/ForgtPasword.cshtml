@@ -1,0 +1,1017 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Şifremi Unuttum - İşletme - RezerveHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 0;
+        }
+
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            letter-spacing: -1px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(135deg, #ff6b6b, #667eea, #764ba2);
+            border-radius: 2px;
+            opacity: 0.8;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Main Content */
+        main {
+            padding-top: 120px;
+            padding-bottom: 50px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Background Animation */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape-1 {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            top: 60%;
+            left: 80%;
+            animation-delay: 2s;
+        }
+
+        .shape-3 {
+            top: 80%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        .shape-4 {
+            top: 10%;
+            left: 70%;
+            animation-delay: 1s;
+            width: 60px;
+            height: 60px;
+        }
+
+        keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        /* Forgot Password Card */
+        .forgot-password-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            animation: slideUp 0.8s ease;
+        }
+
+        .forgot-password-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52, #ff8a80);
+            border-radius: 25px 25px 0 0;
+        }
+
+        .forgot-password-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .forgot-password-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 15px 40px rgba(255, 107, 107, 0.5);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+            }
+        }
+
+        .forgot-password-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .forgot-password-subtitle {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Progress Indicator */
+        .progress-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-circle {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: 2px solid #ddd;
+            color: #999;
+        }
+
+        .step-circle.active {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            border-color: #ff6b6b;
+        }
+
+        .step-circle.completed {
+            background: #32cd32;
+            color: white;
+            border-color: #32cd32;
+        }
+
+        .step-line {
+            width: 50px;
+            height: 2px;
+            background: #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .step-line.completed {
+            background: #32cd32;
+        }
+
+        .step-text {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        /* Form Styles */
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid rgba(255, 107, 107, 0.2);
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+            background: white;
+        }
+
+        .form-input::placeholder {
+            color: #999;
+        }
+
+        .form-input.error {
+            border-color: #ff6b6b;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ff6b6b;
+            font-size: 1.2rem;
+        }
+
+        .verification-code-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 50px;
+            border: 2px solid rgba(255, 107, 107, 0.2);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.3);
+            background: white;
+        }
+
+        .resend-code {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .resend-link {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .resend-link:hover {
+            color: #ee5a52;
+            text-decoration: underline;
+        }
+
+        .resend-timer {
+            color: #999;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #ee5a52;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .password-strength {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .strength-bar {
+            width: 100%;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff6b6b, #ffa500, #32cd32);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Success message */
+        .success-message {
+            background: rgba(50, 205, 50, 0.1);
+            border: 2px solid #32cd32;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            color: #228b22;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        .success-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Error message */
+        .error-message {
+            color: #ff6b6b;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Animations */
+        keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+       media (max-width: 768px) {
+            .forgot-password-container {
+                padding: 2rem;
+                margin: 1rem;
+                max-width: none;
+            }
+
+            .forgot-password-title {
+                font-size: 1.8rem;
+            }
+
+            .forgot-password-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 2rem;
+            }
+
+            .progress-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .step-line {
+                width: 2px;
+                height: 30px;
+            }
+        }
+
+        media (max-width: 480px) {
+            main {
+                padding-top: 100px;
+            }
+
+            .forgot-password-container {
+                padding: 1.5rem;
+            }
+
+            .form-input {
+                padding: 0.8rem 0.8rem 0.8rem 2.5rem;
+            }
+
+            .input-icon {
+                left: 0.8rem;
+            }
+
+            .verification-code-container {
+                gap: 0.3rem;
+            }
+
+            .code-input {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="/" class="logo">RezerveHub</a>
+            <a href="/Busnies/Login" class="back-btn">
+                <span>←</span> İşletme Girişi
+            </a>
+        </nav>
+    </header>
+
+    <div class="bg-animation">
+        <div class="floating-shapes shape-1"></div>
+        <div class="floating-shapes shape-2"></div>
+        <div class="floating-shapes shape-3"></div>
+        <div class="floating-shapes shape-4"></div>
+    </div>
+
+    <main>
+        <div class="forgot-password-container">
+            <div class="forgot-password-header">
+                <div class="forgot-password-icon">🔑</div>
+                <h1 class="forgot-password-title">Şifremi Unuttum</h1>
+                <p class="forgot-password-subtitle">İşletme hesabınızın şifresini sıfırlamak için aşağıdaki adımları takip edin</p>
+            </div>
+
+            <!-- Progress Indicator -->
+            <div class="progress-container">
+                <div class="progress-step">
+                    <div class="step-circle active" id="step1Circle">1</div>
+                    <div class="step-text">E-posta</div>
+                </div>
+                <div class="step-line" id="line1"></div>
+                <div class="progress-step">
+                    <div class="step-circle" id="step2Circle">2</div>
+                    <div class="step-text">Doğrulama</div>
+                </div>
+                <div class="step-line" id="line2"></div>
+                <div class="progress-step">
+                    <div class="step-circle" id="step3Circle">3</div>
+                    <div class="step-text">Yeni Şifre</div>
+                </div>
+            </div>
+
+            <!-- Step 1: Email Input -->
+            <div class="form-step active" id="step1">
+                <div class="form-group">
+                    <span class="input-icon">🏢</span>
+                    <input type="email" class="form-input" id="businessEmail" placeholder="İşletme e-posta adresiniz" required>
+                    <div class="error-message" id="emailError">Geçerli bir e-posta adresi giriniz</div>
+                </div>
+                <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; text-align: center;">
+                    Kayıtlı e-posta adresinizi girin. Size doğrulama kodu gönderilecektir.
+                </p>
+                <button type="button" class="action-btn" id="sendCodeBtn" onclick="sendVerificationCode()">
+                    <div class="loading" id="loading1"></div>
+                    <span id="btnText1">Doğrulama Kodu Gönder</span>
+                </button>
+            </div>
+
+            <!-- Step 2: Verification Code -->
+            <div class="form-step" id="step2">
+                <p style="color: #666; font-size: 0.9rem; margin-bottom: 1.5rem; text-align: center;">
+                    <span id="sentEmail"></span> adresine gönderilen 6 haneli doğrulama kodunu giriniz.
+                </p>
+                <div class="verification-code-container">
+                    <input type="text" class="code-input" maxlength="1" oninput="handleCodeInput(this, 0)">
+                    <input type="text" class="code-input" maxlength="1" oninput="handleCodeInput(this, 1)">
+                    <input type="text" class="code-input" maxlength="1" oninput="handleCodeInput(this, 2)">
+                    <input type="text" class="code-input" maxlength="1" oninput="handleCodeInput(this, 3)">
+                    <input type="text" class="code-input" maxlength="1" oninput="handleCodeInput(this, 4)">
+                    <input type="text" class="code-input" maxlength="1" oninput="handleCodeInput(this, 5)">
+                </div>
+                <div class="error-message" id="codeError">Doğrulama kodu hatalı</div>
+                <div class="resend-code">
+                    <div class="resend-timer" id="resendTimer">Yeniden gönderebilmek için 60 saniye bekleyin</div>
+                    <a href="#" class="resend-link" id="resendLink" onclick="resendCode()" style="display: none;">Kodu Tekrar Gönder</a>
+                </div>
+                <button type="button" class="action-btn" id="verifyCodeBtn" onclick="verifyCode()">
+                    <div class="loading" id="loading2"></div>
+                    <span id="btnText2">Kodu Doğrula</span>
+                </button>
+            </div>
+
+            <!-- Step 3: New Password -->
+            <div class="form-step" id="step3">
+                <div class="form-group">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" class="form-input" id="newPassword" placeholder="Yeni şifreniz (en az 8 karakter)" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('newPassword')">👁️</button>
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div id="strengthText" style="margin-top: 0.5rem; font-size: 0.85rem;"></div>
+                    </div>
+                    <div class="error-message" id="passwordError">Şifre en az 8 karakter olmalıdır</div>
+                </div>
+
+                <div class="form-group">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" class="form-input" id="confirmPassword" placeholder="Yeni şifrenizi tekrar giriniz" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">👁️</button>
+                    <div class="error-message" id="confirmPasswordError">Şifreler eşleşmiyor</div>
+                </div>
+
+                <button type="button" class="action-btn" id="resetPasswordBtn" onclick="resetPassword()">
+                    <div class="loading" id="loading3"></div>
+                    <span id="btnText3">Şifreyi Güncelle</span>
+                </button>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">✅</div>
+                <h3>Şifreniz Başarıyla Güncellendi!</h3>
+                <p>Artık yeni şifrenizle giriş yapabilirsiniz.</p>
+                <button type="button" class="action-btn" onclick="goToLogin()" style="margin-top: 1rem;">
+                    Giriş Sayfasına Git
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentStep = 1;
+        let resendTimer = 60;
+        let resendInterval;
+        let verificationCode = '';
+      
+
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+            document.getElementById(elementId.replace('Error', '')).classList.add('error');
+        }
+
+        function hideError(elementId) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.classList.remove('show');
+            document.getElementById(elementId.replace('Error', '')).classList.remove('error');
+        }
+
+        function moveToStep(step) {
+            // Hide current step
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            
+            // Update progress indicators
+            if (step > currentStep) {
+                document.getElementById(`step${currentStep}Circle`).classList.remove('active');
+                document.getElementById(`step${currentStep}Circle`).classList.add('completed');
+                
+                if (currentStep < 3) {
+                    document.getElementById(`line${currentStep}`).classList.add('completed');
+                }
+            }
+            
+            // Show new step
+            document.getElementById(`step${step}`).classList.add('active');
+            document.getElementById(`step${step}Circle`).classList.add('active');
+            
+            currentStep = step;
+        }
+
+        // Step 1: Send Verification Code
+        function sendVerificationCode() {
+            const email = document.getElementById('businessEmail').value;
+
+            if (!email) {
+                showError('emailError', 'Geçerli bir e-posta adresi giriniz');
+                return;
+            }
+
+            const loading = document.getElementById('loading1');
+            const btnText = document.getElementById('btnText1');
+            const btn = document.getElementById('sendCodeBtn');
+
+            loading.style.display = 'inline-block';
+            btnText.textContent = 'Kod gönderiliyor...';
+            btn.disabled = true;
+
+            fetch('/Busnies/SendPasswordResetCode', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            })
+            .then(res => res.json())
+            .then(data => {
+                loading.style.display = 'none';
+                btnText.textContent = 'Doğrulama Kodu Gönder';
+                btn.disabled = false;
+                if (data.success) {
+                    document.getElementById('sentEmail').textContent = email;
+                    moveToStep(2);
+                    startResendTimer();
+                    // resetId ve email'i sonraki adımlar için sakla
+                    window._resetId = data.resetId;
+                    window._resetEmail = data.email;
+                } else {
+                    showError('emailError', data.message);
+                }
+            })
+            .catch(() => {
+                loading.style.display = 'none';
+                btnText.textContent = 'Doğrulama Kodu Gönder';
+                btn.disabled = false;
+                showError('emailError', 'Bir hata oluştu.');
+            });
+        }
+
+        // Step 2: Handle code input
+        function handleCodeInput(input, index) {
+            // Only allow numbers
+            input.value = input.value.replace(/[^0-9]/g, '');
+            
+            // Move to next input
+            if (input.value && index < 5) {
+                const nextInput = input.parentElement.children[index + 1];
+                nextInput.focus();
+            }
+            
+            // Move to previous input on backspace
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && !input.value && index > 0) {
+                    const prevInput = input.parentElement.children[index - 1];
+                    prevInput.focus();
+                }
+            });
+        }
+
+        function verifyCode() {
+            const codeInputs = document.querySelectorAll('.code-input');
+            let enteredCode = '';
+            codeInputs.forEach(input => {
+                enteredCode += input.value;
+            });
+
+            if (enteredCode.length !== 6) {
+                showError('codeError', 'Lütfen 6 haneli kodu tam giriniz');
+                return;
+            }
+
+            const loading = document.getElementById('loading2');
+            const btnText = document.getElementById('btnText2');
+            const btn = document.getElementById('verifyCodeBtn');
+
+            loading.style.display = 'inline-block';
+            btnText.textContent = 'Doğrulanıyor...';
+            btn.disabled = true;
+
+            fetch('/Busnies/VerifyPasswordResetCode', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    resetId: window._resetId,
+                    resetCode: enteredCode
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                loading.style.display = 'none';
+                btnText.textContent = 'Kodu Doğrula';
+                btn.disabled = false;
+                if (data.success) {
+                    moveToStep(3);
+                    hideError('codeError');
+                } else {
+                    showError('codeError', data.message);
+                    // Clear inputs
+                    codeInputs.forEach(input => input.value = '');
+                    codeInputs[0].focus();
+                }
+            })
+            .catch(() => {
+                loading.style.display = 'none';
+                btnText.textContent = 'Kodu Doğrula';
+                btn.disabled = false;
+                showError('codeError', 'Bir hata oluştu.');
+            });
+        }
+
+        function resendCode() {
+            // Generate new code
+            verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+            console.log('New Verification Code:', verificationCode);
+            
+            // Clear inputs
+            document.querySelectorAll('.code-input').forEach(input => input.value = '');
+            document.querySelector('.code-input').focus();
+            
+            // Restart timer
+            startResendTimer();
+            
+            // Show success message (in real app, this would be from API response)
+            alert('Yeni doğrulama kodu gönderildi!');
+        }
+
+        function startResendTimer() {
+            resendTimer = 60;
+            const timerElement = document.getElementById('resendTimer');
+            const linkElement = document.getElementById('resendLink');
+            
+            timerElement.style.display = 'block';
+            linkElement.style.display = 'none';
+            
+            resendInterval = setInterval(() => {
+                resendTimer--;
+                timerElement.textContent = `Yeniden gönderebilmek için ${resendTimer} saniye bekleyin`;
+                
+                if (resendTimer <= 0) {
+                    clearInterval(resendInterval);
+                    timerElement.style.display = 'none';
+                    linkElement.style.display = 'inline';
+                }
+            }, 1000);
+        }
+
+        // Step 3: Password functions
+        function togglePassword(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleBtn = passwordInput.nextElementSibling;
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        }
+
+        // Password strength checker
+        document.getElementById('newPassword').addEventListener('input', function() {
+            const password = this.value;
+            const strengthFill = document.getElementById('strengthFill');
+            const strengthText = document.getElementById('strengthText');
+            
+            let strength = 0;
+            let strengthLabel = '';
+            
+            if (password.length >= 8) strength += 25;
+            if (password.match(/[a-z]/)) strength += 25;
+            if (password.match(/[A-Z]/)) strength += 25;
+            if (password.match(/[0-9]/)) strength += 25;
+            
+            strengthFill.style.width = `${strength}%`;
+            
+            if (strength < 50) {
+                strengthFill.style.backgroundColor = '#ff6b6b';
+                strengthLabel = 'Zayıf';
+            } else if (strength < 75) {
+                strengthFill.style.backgroundColor = '#ffa500';
+                strengthLabel = 'Orta';
+            } else {
+                strengthFill.style.backgroundColor = '#32cd32';
+                strengthLabel = 'Güçlü';
+            }
+            
+            strengthText.textContent = strengthLabel;
+            strengthText.style.color = strengthFill.style.backgroundColor;
+        });
+
+        function resetPassword() {
+            const password = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password.length < 8) {
+                showError('passwordError', 'Şifre en az 8 karakter olmalıdır');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('confirmPasswordError', 'Şifreler eşleşmiyor');
+                return;
+            }
+
+            const loading = document.getElementById('loading3');
+            const btnText = document.getElementById('btnText3');
+            const btn = document.getElementById('resetPasswordBtn');
+
+            loading.style.display = 'inline-block';
+            btnText.textContent = 'Güncelleniyor...';
+            btn.disabled = true;
+
+            fetch('/Busnies/ResetPassword', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    resetId: window._resetId,
+                    newPassword: password
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                loading.style.display = 'none';
+                btnText.textContent = 'Şifreyi Güncelle';
+                btn.disabled = false;
+                if (data.success) {
+                    document.getElementById('successMessage').classList.add('show');
+                } else {
+                    showError('passwordError', data.message);
+                }
+            })
+            .catch(() => {
+                loading.style.display = 'none';
+                btnText.textContent = 'Şifreyi Güncelle';
+                btn.disabled = false;
+                showError('passwordError', 'Bir hata oluştu.');
+            });
+        }
+
+        function goToLogin() {
+            // Redirect to login page
+            window.location.href = '/Busnies/Login';
+        }
+    </script>
+</body>
+</html>

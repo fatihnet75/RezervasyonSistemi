@@ -1,0 +1,1032 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeni Hesap Oluştur - RezerveHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 0;
+        }
+
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            letter-spacing: -1px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(135deg, #ff6b6b, #667eea, #764ba2);
+            border-radius: 2px;
+            opacity: 0.8;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Main Content */
+        main {
+            padding-top: 120px;
+            padding-bottom: 50px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Background Animation */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape-1 {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            top: 60%;
+            left: 80%;
+            animation-delay: 2s;
+        }
+
+        .shape-3 {
+            top: 80%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        .shape-4 {
+            top: 10%;
+            left: 70%;
+            animation-delay: 1s;
+            width: 60px;
+            height: 60px;
+        }
+
+        .shape-5 {
+            top: 70%;
+            left: 60%;
+            animation-delay: 3s;
+            width: 80px;
+            height: 80px;
+        }
+
+        keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        /* Register Card */
+        .register-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            animation: slideUp 0.8s ease;
+        }
+
+        .register-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(135deg, #ff6b6b, #667eea, #764ba2);
+            border-radius: 25px 25px 0 0;
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .user-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            }
+        }
+
+        .register-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .register-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Form Styles */
+        .register-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .form-group {
+            position: relative;
+            flex: 1;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+            background: white;
+        }
+
+        .form-input::placeholder {
+            color: #999;
+        }
+
+        .form-input.error {
+            border-color: #ff6b6b;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #764ba2;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .password-strength {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .strength-bar {
+            width: 100%;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff6b6b, #ffa500, #32cd32);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-input {
+            margin-top: 0.2rem;
+            transform: scale(1.2);
+            accent-color: #667eea;
+        }
+
+        .checkbox-label {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .checkbox-label a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .checkbox-label a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .register-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-top: 1rem;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .register-btn.enabled {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .register-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .register-btn:hover::before {
+            left: 100%;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .register-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Additional Options */
+        .register-options {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .divider {
+            position: relative;
+            text-align: center;
+            margin: 2rem 0;
+            color: #999;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #ddd, transparent);
+        }
+
+        .divider span {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0 1rem;
+        }
+
+        .login-section {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .login-text {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .login-btn-link {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 0.8rem 2rem;
+            border: 2px solid #667eea;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .login-btn-link:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Error Messages */
+        .error-message {
+            color: #ff6b6b;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Animations */
+        keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        media (max-width: 768px) {
+            .register-container {
+                padding: 2rem;
+                margin: 1rem;
+                max-width: none;
+            }
+
+            .register-title {
+                font-size: 1.8rem;
+            }
+
+            .user-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 2rem;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+        }
+
+        media (max-width: 480px) {
+            main {
+                padding-top: 100px;
+            }
+
+            .register-container {
+                padding: 1.5rem;
+            }
+
+            .form-input {
+                padding: 0.8rem 0.8rem 0.8rem 2.5rem;
+            }
+
+            .input-icon {
+                left: 0.8rem;
+            }
+
+            .password-toggle {
+                right: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="/" class="logo">RezerveHub</a>
+            <a href="/Custommer/Login" class="back-btn">
+                <span>←</span> Giriş Sayfasına Dön
+            </a>
+        </nav>
+    </header>
+
+    <div class="bg-animation">
+        <div class="floating-shapes shape-1"></div>
+        <div class="floating-shapes shape-2"></div>
+        <div class="floating-shapes shape-3"></div>
+        <div class="floating-shapes shape-4"></div>
+        <div class="floating-shapes shape-5"></div>
+    </div>
+
+    <main>
+        <div class="register-container">
+            <div class="register-header">
+                <div class="user-icon">✨</div>
+                <h1 class="register-title">Yeni Hesap Oluştur</h1>
+                <p class="register-subtitle">Hesabınızı oluşturun ve rezervasyon dünyasına katılın</p>
+            </div>
+
+            <form class="register-form" id="registerForm" method="post" action="/Custommer/CustommerSave">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success" style="background: #d4edda; color: #155724; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #c3e6cb;">
+                        @TempData["Success"]
+                    </div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
+                        @TempData["Error"]
+                    </div>
+                }
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <span class="input-icon">👤</span>
+                        <input type="text" name="ad" class="form-input" id="firstName" placeholder="Adınız" required>
+                        <div class="error-message" id="firstNameError">Ad alanı zorunludur</div>
+                    </div>
+                    <div class="form-group">
+                        <span class="input-icon">👤</span>
+                        <input type="text" name="soyad" class="form-input" id="lastName" placeholder="Soyadınız" required>
+                        <div class="error-message" id="lastNameError">Soyad alanı zorunludur</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <span class="input-icon">📧</span>
+                    <input type="email" name="email" class="form-input" id="email" placeholder="E-posta adresiniz" required>
+                    <div class="error-message" id="emailError">Geçerli bir e-posta adresi giriniz</div>
+                </div>
+
+                <div class="form-group">
+                    <span class="input-icon">📱</span>
+                    <input type="tel" name="telefon" class="form-input" id="phone" placeholder="Telefon numaranız (örn: 0532 123 45 67)" required>
+                    <div class="error-message" id="phoneError">Geçerli bir telefon numarası giriniz</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <span class="input-icon">🎂</span>
+                        <input type="date" name="dogumTarihi" class="form-input" id="birthDate" required>
+                        <div class="error-message" id="birthDateError">Doğum tarihi giriniz</div>
+                    </div>
+                    <div class="form-group">
+                        <span class="input-icon">⚧</span>
+                        <select name="cinsiyet" class="form-input" id="gender" required>
+                            <option value="">Cinsiyet Seçiniz</option>
+                            <option value="male">Erkek</option>
+                            <option value="female">Kadın</option>
+                            <option value="other">Diğer</option>
+                        </select>
+                        <div class="error-message" id="genderError">Cinsiyet seçiniz</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" name="password" class="form-input" id="password" placeholder="Şifreniz (en az 8 karakter)" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('password')">👁️</button>
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div id="strengthText" style="margin-top: 0.5rem; font-size: 0.85rem;"></div>
+                    </div>
+                    <div class="error-message" id="passwordError">Şifre en az 8 karakter olmalıdır</div>
+                </div>
+
+                <div class="form-group">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" class="form-input" id="confirmPassword" placeholder="Şifrenizi tekrar giriniz" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">👁️</button>
+                    <div class="error-message" id="confirmPasswordError">Şifreler eşleşmiyor</div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" class="checkbox-input" id="terms" required>
+                    <label class="checkbox-label" for="terms">
+                        <a href="#" onclick="showTerms()">Kullanım Şartları</a> ve <a href="#" onclick="showPrivacy()">Gizlilik Politikası</a>'nı okudum ve kabul ediyorum
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" name="haberBulteni" class="checkbox-input" id="newsletter">
+                    <label class="checkbox-label" for="newsletter">
+                        Kampanya ve duyurular için e-posta almak istiyorum
+                    </label>
+                </div>
+
+                <button type="submit" class="register-btn" id="registerBtn">
+                    <div class="loading" id="loading"></div>
+                    <span id="btnText">Hesap Oluştur</span>
+                </button>
+            </form>
+
+            <!-- Email Verification Section (Initially Hidden) -->
+            <div id="verificationSection" style="display: none; margin-top: 2rem; padding: 1.5rem; background: rgba(102, 126, 234, 0.1); border-radius: 15px; border: 1px solid rgba(102, 126, 234, 0.3);">
+                <h3 style="color: #667eea; margin-bottom: 1rem; text-align: center;">📧 E-posta Doğrulama</h3>
+                <p style="text-align: center; margin-bottom: 1.5rem; color: #666;">
+                    E-posta adresinize gönderilen 6 haneli doğrulama kodunu giriniz.
+                </p>
+                
+                <form id="verificationForm" method="post" action="/Custommer/VerifyAndSave">
+                    <input type="hidden" id="tempUserId" name="tempUserId">
+                    <input type="hidden" id="tempUserEmail" name="tempUserEmail">
+                    
+                    <div class="form-group" style="text-align: center;">
+                        <div style="display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem;">
+                            <input type="text" name="verificationCode" id="verificationCode" 
+                                   placeholder="000000" maxlength="6" 
+                                   style="text-align: center; font-size: 1.5rem; letter-spacing: 0.5rem; padding: 1rem; width: 200px; border: 2px solid #667eea; border-radius: 10px;">
+                        </div>
+                        <div class="error-message" id="verificationError" style="display: none;">Geçersiz doğrulama kodu</div>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <button type="submit" class="register-btn" id="verifyBtn" style="background: #667eea;">
+                            <div class="loading" id="verifyLoading" style="display: none;"></div>
+                            <span id="verifyBtnText">E-posta Adresimi Doğrula</span>
+                        </button>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <button type="button" onclick="resendVerificationCode()" style="background: none; border: none; color: #667eea; text-decoration: underline; cursor: pointer;">
+                            Doğrulama kodunu tekrar gönder
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="register-options">
+                <div class="divider">
+                    <span>veya</span>
+                </div>
+
+                <div class="login-section">
+                    <p class="login-text">Zaten hesabınız var mı?</p>
+                    <a href="/Custommer/Login" class="login-btn-link">🔑 Giriş Yap</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Form validation and interaction
+        const form = document.getElementById('registerForm');
+        const registerBtn = document.getElementById('registerBtn');
+        const termsCheckbox = document.getElementById('terms');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const verificationSection = document.getElementById('verificationSection');
+        const verificationForm = document.getElementById('verificationForm');
+
+        // Enable/disable register button based on terms checkbox
+        termsCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                registerBtn.classList.add('enabled');
+            } else {
+                registerBtn.classList.remove('enabled');
+            }
+        });
+
+        // Password toggle functionality
+        function togglePassword(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleBtn = passwordInput.nextElementSibling;
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        }
+
+        // Password strength checker
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            const strengthFill = document.getElementById('strengthFill');
+            const strengthText = document.getElementById('strengthText');
+            
+            let strength = 0;
+            let strengthLabel = '';
+            
+            if (password.length >= 8) strength += 25;
+            if (password.match(/[a-z]/)) strength += 25;
+            if (password.match(/[A-Z]/)) strength += 25;
+            if (password.match(/[0-9]/)) strength += 25;
+            
+            strengthFill.style.width = strength + '%';
+            
+            if (strength < 50) {
+                strengthLabel = 'Zayıf';
+                strengthFill.style.background = '#ff6b6b';
+            } else if (strength < 75) {
+                strengthLabel = 'Orta';
+                strengthFill.style.background = '#ffa500';
+            } else {
+                strengthLabel = 'Güçlü';
+                strengthFill.style.background = '#32cd32';
+            }
+            
+            strengthText.textContent = password.length > 0 ? `Şifre Gücü: ${strengthLabel}` : '';
+        });
+
+        // Confirm password validation
+        confirmPasswordInput.addEventListener('input', function() {
+            const password = passwordInput.value;
+            const confirmPassword = this.value;
+            const errorMsg = document.getElementById('confirmPasswordError');
+            
+            if (confirmPassword && password !== confirmPassword) {
+                this.classList.add('error');
+                errorMsg.classList.add('show');
+            } else {
+                this.classList.remove('error');
+                errorMsg.classList.remove('show');
+            }
+        });
+
+        // Phone number formatting
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value.length <= 4) {
+                    value = value.replace(/(\d{4})/, '$1');
+                } else if (value.length <= 7) {
+                    value = value.replace(/(\d{4})(\d{3})/, '$1 $2');
+                } else if (value.length <= 9) {
+                    value = value.replace(/(\d{4})(\d{3})(\d{2})/, '$1 $2 $3');
+                } else {
+                    value = value.replace(/(\d{4})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+                }
+            }
+            e.target.value = value;
+        });
+
+        // Form submission - Step 1: Send verification code
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!termsCheckbox.checked) {
+                alert('Lütfen kullanım şartlarını kabul ediniz.');
+                return;
+            }
+            
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            
+            if (password !== confirmPassword) {
+                alert('Şifreler eşleşmiyor.');
+                return;
+            }
+            
+            const loading = document.getElementById('loading');
+            const btnText = document.getElementById('btnText');
+            
+            // Show loading animation
+            loading.style.display = 'inline-block';
+            btnText.textContent = 'Doğrulama kodu gönderiliyor...';
+            registerBtn.disabled = true;
+            
+            try {
+                // Collect form data
+                const formData = new FormData(form);
+                
+                // Send request to get verification code
+                const response = await fetch('/Custommer/SendVerificationCode', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Show verification section
+                    verificationSection.style.display = 'block';
+                    document.getElementById('tempUserId').value = result.tempUserId;
+                    document.getElementById('tempUserEmail').value = result.email;
+                    
+                    // Scroll to verification section
+                    verificationSection.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Reset register button
+                    loading.style.display = 'none';
+                    btnText.textContent = 'Hesap Oluştur';
+                    registerBtn.disabled = false;
+                    
+                    // Focus on verification code input
+                    document.getElementById('verificationCode').focus();
+                } else {
+                    alert(result.message || 'Doğrulama kodu gönderilemedi.');
+                    loading.style.display = 'none';
+                    btnText.textContent = 'Hesap Oluştur';
+                    registerBtn.disabled = false;
+                }
+            } catch (error) {
+                alert('Bir hata oluştu. Lütfen tekrar deneyiniz.');
+                loading.style.display = 'none';
+                btnText.textContent = 'Hesap Oluştur';
+                registerBtn.disabled = false;
+            }
+        });
+
+        // Verification form submission - Step 2: Verify and save
+        verificationForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const verifyBtn = document.getElementById('verifyBtn');
+            const verifyLoading = document.getElementById('verifyLoading');
+            const verifyBtnText = document.getElementById('verifyBtnText');
+            const verificationCode = document.getElementById('verificationCode').value;
+            
+            if (!verificationCode || verificationCode.length !== 6) {
+                document.getElementById('verificationError').style.display = 'block';
+                return;
+            }
+            
+            // Show loading
+            verifyLoading.style.display = 'inline-block';
+            verifyBtnText.textContent = 'Doğrulanıyor...';
+            verifyBtn.disabled = true;
+            
+            try {
+                const formData = new FormData(verificationForm);
+                
+                const response = await fetch('/Custommer/VerifyAndSave', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Hesabınız başarıyla oluşturuldu! Giriş sayfasına yönlendiriliyorsunuz...');
+                    window.location.href = '/Custommer/Login';
+                } else {
+                    document.getElementById('verificationError').textContent = result.message || 'Geçersiz doğrulama kodu';
+                    document.getElementById('verificationError').style.display = 'block';
+                    verifyLoading.style.display = 'none';
+                    verifyBtnText.textContent = 'E-posta Adresimi Doğrula';
+                    verifyBtn.disabled = false;
+                }
+            } catch (error) {
+                alert('Bir hata oluştu. Lütfen tekrar deneyiniz.');
+                verifyLoading.style.display = 'none';
+                verifyBtnText.textContent = 'E-posta Adresimi Doğrula';
+                verifyBtn.disabled = false;
+            }
+        });
+
+        // Resend verification code
+        async function resendVerificationCode() {
+            const email = document.getElementById('tempUserEmail').value;
+            if (!email) return;
+            
+            try {
+                const response = await fetch('/Custommer/ResendVerificationCode', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Doğrulama kodu tekrar gönderildi. E-postanızı kontrol ediniz.');
+                } else {
+                    alert(result.message || 'Doğrulama kodu gönderilemedi.');
+                }
+            } catch (error) {
+                alert('Bir hata oluştu. Lütfen tekrar deneyiniz.');
+            }
+        }
+
+        // Verification code input formatting
+        document.getElementById('verificationCode').addEventListener('input', function(e) {
+            // Only allow numbers
+            this.value = this.value.replace(/\D/g, '');
+            
+            // Hide error when user starts typing
+            document.getElementById('verificationError').style.display = 'none';
+        });
+
+        // Terms and Privacy modals
+        function showTerms() {
+            alert('Kullanım Şartları modal penceresi açılacak...');
+        }
+
+        function showPrivacy() {
+            alert('Gizlilik Politikası modal penceresi açılacak...');
+        }
+
+        // Input focus animations
+        const inputs = document.querySelectorAll('.form-input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+
+       
+        document.getElementById('email').addEventListener('blur', function() {
+            const email = this.value;
+            const errorMsg = document.getElementById('emailError');
+            
+            if (!email) {
+                this.classList.remove('error');
+                errorMsg.classList.remove('show');
+                return;
+            }
+            
+            if (!emailRegex.test(email)) {
+                this.classList.add('error');
+                errorMsg.textContent = 'Geçerli bir e-posta adresi giriniz';
+                errorMsg.classList.add('show');
+            } else {
+                this.classList.remove('error');
+                errorMsg.classList.remove('show');
+            }
+        });
+
+        // Real-time email validation
+        document.getElementById('email').addEventListener('input', function() {
+            const email = this.value;
+            const errorMsg = document.getElementById('emailError');
+            
+            if (email && !emailRegex.test(email)) {
+                this.classList.add('error');
+                errorMsg.textContent = 'Geçerli bir e-posta adresi giriniz';
+                errorMsg.classList.add('show');
+            } else {
+                this.classList.remove('error');
+                errorMsg.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
