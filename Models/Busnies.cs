@@ -50,6 +50,19 @@ public class Busnies
     // İşletmeye özel ek alanlar
     [BsonElement("hizmetler")]
     public List<BusniesService> Hizmetler { get; set; } = new();
+
+    [BsonElement("profilResmiUrl")]
+    public string ProfilResmiUrl { get; set; }
+
+    [BsonElement("il")]
+    [Required(ErrorMessage = "İl (şehir) zorunludur.")]
+    public string Il { get; set; }
+
+    [BsonElement("ilce")]
+    [Required(ErrorMessage = "İlçe zorunludur.")]
+    public string Ilce { get; set; }
+
+    // Profil resmi için alan eklendi
 }
 
 public class BusniesService

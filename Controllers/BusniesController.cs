@@ -2,6 +2,7 @@
 using RezervasyonSistemi.Models;
 using RezervasyonSistemi.Services;
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 
 namespace RezervasyonSistemi.Controllers;
 
@@ -44,6 +45,8 @@ public class BusniesController : Controller
                     TempData["Warning"] = "E-posta adresinizi doğrulamanız gerekiyor. Lütfen e-postanızı kontrol edin.";
                     return View();
                 }
+                // TempData["BusniesEmail"] = email;
+                HttpContext.Session.SetString("BusniesEmail", email);
                 return RedirectToAction("Index", "IsletmePanel");
             }
             else
@@ -72,7 +75,10 @@ public class BusniesController : Controller
         public string email { get; set; }
         public string telefon { get; set; }
         public string adres { get; set; }
+        public string il { get; set; }
+        public string ilce { get; set; }
         public string password { get; set; }
+        public List<BusniesService> hizmetler { get; set; }
     }
 
     [HttpPost]
@@ -84,7 +90,10 @@ public class BusniesController : Controller
             var email = request.email;
             var telefon = request.telefon;
             var adres = request.adres;
+            var il = request.il;
+            var ilce = request.ilce;
             var password = request.password;
+            var hizmetler = request.hizmetler ?? new List<BusniesService>();
             if (string.IsNullOrEmpty(ad) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
                 return Json(new { success = false, message = "Tüm zorunlu alanları doldurunuz." });
             if (!IsValidEmail(email))
@@ -100,9 +109,12 @@ public class BusniesController : Controller
                 Email = email,
                 Telefon = telefon,
                 Adres = adres,
+                Il = il,
+                Ilce = ilce,
                 Sifre = password,
                 VerificationCode = verificationCode,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                Hizmetler = hizmetler
             };
             _tempBusnies[tempId] = tempData;
             var emailBody = $@"<h2>E-posta Doğrulama</h2><p>Merhaba {ad},</p><p>İşletme hesabınızı doğrulamak için kodunuz:</p><h3>{verificationCode}</h3><p>Bu kod 10 dakika geçerlidir.</p>";
@@ -150,9 +162,12 @@ public class BusniesController : Controller
                 Email = tempData.Email,
                 Telefon = tempData.Telefon,
                 Adres = tempData.Adres,
+                Il = tempData.Il,
+                Ilce = tempData.Ilce,
                 Sifre = tempData.Sifre,
                 EmailDogrulamaKodu = tempData.VerificationCode,
-                EmailDogrulandi = false
+                EmailDogrulandi = false,
+                Hizmetler = tempData.Hizmetler ?? new List<BusniesService>()
             };
             var created = await _mongoDBService.CreateBusniesAsync(busnies);
             var isVerified = await _mongoDBService.VerifyBusniesEmailAsync(tempData.Email, tempData.VerificationCode);
@@ -320,8 +335,11 @@ public class BusniesController : Controller
         public string Email { get; set; }
         public string Telefon { get; set; }
         public string Adres { get; set; }
+        public string Il { get; set; }
+        public string Ilce { get; set; }
         public string Sifre { get; set; }
         public string VerificationCode { get; set; }
         public DateTime CreatedAt { get; set; }
+        public List<BusniesService> Hizmetler { get; set; }
     }
 }

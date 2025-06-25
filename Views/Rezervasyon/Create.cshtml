@@ -1,0 +1,368 @@
+@model RezervasyonSistemi.Models.Busnies
+@{
+    ViewBag.Title = "Rezervasyon Yap";
+    var isBusinessSelected = Model != null && !string.IsNullOrEmpty(Model.Id);
+    var allBusinesses = ViewBag.AllBusinesses as List<RezervasyonSistemi.Models.Busnies>;
+}
+
+<style>
+    .create-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .create-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .create-header {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .create-header h2 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+    
+    .create-header p {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+        font-size: 0.95rem;
+    }
+    
+    .create-body {
+        padding: 2rem;
+    }
+    
+    .business-grid {
+        display: grid;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .business-card {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .business-card:hover {
+        border-color: #ff6b6b;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255,107,107,0.15);
+    }
+    
+    .business-card.selected {
+        border-color: #ff6b6b;
+        background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+    }
+    
+    .business-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+    
+    .business-info {
+        color: #6c757d;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    .business-address {
+        margin-top: 0.5rem;
+        font-weight: 500;
+        color: #495057;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 0.95rem;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+        background: white;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #ff6b6b;
+        box-shadow: 0 0 0 3px rgba(255,107,107,0.1);
+    }
+    
+    .form-select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 1rem;
+        background: white;
+        cursor: pointer;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-select:focus {
+        outline: none;
+        border-color: #ff6b6b;
+        box-shadow: 0 0 0 3px rgba(255,107,107,0.1);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        border: none;
+        color: white;
+        padding: 0.875rem 2rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255,107,107,0.3);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        border: none;
+        color: white;
+        padding: 0.875rem 2rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        margin-top: 1rem;
+    }
+    
+    .btn-secondary:hover {
+        background: #5a6268;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .selected-business {
+        background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+        border: 2px solid #ff6b6b;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .selected-business h4 {
+        color: #ff6b6b;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .selected-business p {
+        color: #6c757d;
+        margin: 0.25rem 0;
+        font-size: 0.9rem;
+    }
+    
+    .back-link {
+        color: #6c757d;
+        text-decoration: none;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        transition: color 0.3s ease;
+    }
+    
+    .back-link:hover {
+        color: #ff6b6b;
+        text-decoration: none;
+    }
+    
+    .back-link::before {
+        content: "←";
+        margin-right: 0.5rem;
+        font-weight: bold;
+    }
+    
+    media (max-width: 768px) {
+        .create-container {
+            padding: 1rem;
+        }
+        
+        .create-card {
+            border-radius: 15px;
+        }
+        
+        .create-header {
+            padding: 1.5rem;
+        }
+        
+        .create-header h2 {
+            font-size: 1.5rem;
+        }
+        
+        .create-body {
+            padding: 1.5rem;
+        }
+        
+        .business-card {
+            padding: 1rem;
+        }
+        
+        .business-name {
+            font-size: 1.1rem;
+        }
+    }
+</style>
+
+<div class="create-container">
+    <div class="create-card">
+        <div class="create-header">
+            <h2>@(isBusinessSelected ? "Rezervasyon Oluştur" : "İşletme Seçin")</h2>
+            <p>@(isBusinessSelected ? "Rezervasyon detaylarını doldurun" : "Rezervasyon yapmak istediğiniz işletmeyi seçin")</p>
+        </div>
+        
+        <div class="create-body">
+            <a href="@Url.Action("Index", "Rezervasyon")" class="back-link">Rezervasyonlara Dön</a>
+            
+            @if (!isBusinessSelected)
+            {
+                <!-- İşletme Seçimi -->
+                <div class="business-grid">
+                    @if (allBusinesses != null && allBusinesses.Any())
+                    {
+                        foreach (var business in allBusinesses)
+                        {
+                            <div class="business-card" onclick="selectBusiness('@business.Id')">
+                                <div class="business-name">@business.Ad</div>
+                                <div class="business-info">
+                                    <div><strong>Telefon:</strong> @business.Telefon</div>
+                                    <div class="business-address">
+                                        <strong>Adres:</strong> @business.Adres, @business.Ilce/@business.Il
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center" style="color: #6c757d; padding: 2rem;">
+                            <p>Henüz kayıtlı işletme bulunmuyor.</p>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <!-- Seçili İşletme Bilgisi -->
+                <div class="selected-business">
+                    <h4>@Model.Ad</h4>
+                    <p><strong>Telefon:</strong> @Model.Telefon</p>
+                    <p><strong>Adres:</strong> @Model.Adres, @Model.Ilce/@Model.Il</p>
+                </div>
+                
+                <!-- Rezervasyon Formu -->
+                <form method="post" action="@Url.Action("Create", "Rezervasyon")">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    
+                    <div class="form-group">
+                        <label class="form-label">Ad Soyad</label>
+                        <input type="text" name="musteriAdSoyad" class="form-control" required />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">E-posta</label>
+                        <input type="email" name="musteriEmail" class="form-control" required />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Tarih</label>
+                        <input type="date" name="date" class="form-control" required />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Saat</label>
+                        <select name="time" class="form-select" required>
+                            <option value="">Saat seçin</option>
+                            @for (int i = 8; i <= 20; i++)
+                            {
+                                <option value="@i:00">@i:00</option>
+                                <option value="@i:30">@i:30</option>
+                            }
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Hizmet</label>
+                        <select name="service" class="form-select" required>
+                            <option value="">Hizmet seçin</option>
+                            @if (Model.Hizmetler != null)
+                            {
+                                foreach (var hizmet in Model.Hizmetler)
+                                {
+                                    <option value="@hizmet">@hizmet</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notlar (Opsiyonel)</label>
+                        <textarea name="notlar" class="form-control" rows="3" placeholder="Özel isteklerinizi buraya yazabilirsiniz..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Rezervasyon Oluştur</button>
+                </form>
+                
+                <a href="@Url.Action("Create", "Rezervasyon")" class="btn-secondary">Farklı İşletme Seç</a>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    function selectBusiness(businessId) {
+        window.location.href = '@Url.Action("Create", "Rezervasyon")?id=' + businessId;
+    }
+</script> 

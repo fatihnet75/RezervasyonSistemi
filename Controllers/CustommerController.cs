@@ -3,6 +3,7 @@ using RezervasyonSistemi.Models;
 using RezervasyonSistemi.Services;
 using RezervasyonSistemi.Controllers;
 using System.Text.Json;
+using BCrypt.Net;
 
 namespace RezervasyonSistemi.Controllers
 {
@@ -33,6 +34,14 @@ namespace RezervasyonSistemi.Controllers
             {
                 _logger.LogInformation($"Login attempt for email: {email}");
                 
+                // Debug: Check if email and password are provided
+                if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+                {
+                    _logger.LogWarning($"Login attempt with empty email or password. Email: '{email}', Password provided: {!string.IsNullOrEmpty(password)}");
+                    TempData["Error"] = "E-posta ve şifre alanları boş olamaz.";
+                    return View();
+                }
+                
                 // First check if user exists
                 var user = await _mongoDBService.GetUserByEmailAsync(email);
                 if (user == null)
@@ -42,8 +51,12 @@ namespace RezervasyonSistemi.Controllers
                     return View();
                 }
                 
+                _logger.LogInformation($"User found: {user.Email}, EmailVerified: {user.EmailDogrulandi}");
+                
                 // Then validate credentials
                 var isValid = await _mongoDBService.ValidateUserCredentialsAsync(email, password);
+                _logger.LogInformation($"Password validation result for {email}: {isValid}");
+                
                 if (isValid)
                 {
                     await _mongoDBService.UpdateLastLoginAsync(user.Id);
@@ -51,11 +64,18 @@ namespace RezervasyonSistemi.Controllers
                     // Check if email is verified
                     if (!user.EmailDogrulandi)
                     {
+                        _logger.LogWarning($"Login attempt for unverified email: {email}");
                         TempData["Warning"] = "E-posta adresinizi doğrulamanız gerekiyor. Lütfen e-postanızı kontrol edin.";
                         return View();
                     }
                     
                     _logger.LogInformation($"Successful login for user: {email}");
+                    
+                    // Set authentication cookie or session
+                    // For now, we'll use a simple approach
+                    HttpContext.Session.SetString("UserEmail", email);
+                    HttpContext.Session.SetString("UserId", user.Id);
+                    
                     // Successful login - redirect to Rezervasyon/Index
                     return RedirectToAction("Index", "Rezervasyon");
                 }
@@ -536,49 +556,95 @@ namespace RezervasyonSistemi.Controllers
         {
             try
             {
-                _logger.LogInformation("Testing MongoDB connection...");
-                
-                // Test creating a simple user
-                var testUser = new User
+                // Test database connection
+                var allUsers = await _mongoDBService.GetAllUsersAsync();
+                var allBusnies = await _mongoDBService.GetAllBusniesAsync();
+                var allRezervasyonlar = await _mongoDBService.GetAllRezervasyonlarAsync();
+
+                var result = new
                 {
-                    Ad = "Test",
-                    Soyad = "User",
-                    Email = $"test{DateTime.Now.Ticks}@test.com",
-                    Sifre = "test123",
-                    Telefon = "5551234567",
-                    DogumTarihi = DateTime.Now.AddYears(-25),
-                    Cinsiyet = "male",
-                    HaberBulteni = false
+                    Users = allUsers.Select(u => new { 
+                        u.Id, 
+                        u.Ad, 
+                        u.Soyad, 
+                        u.Email, 
+                        u.EmailDogrulandi, 
+                        u.OlusturmaTarihi,
+                        PasswordLength = u.Sifre?.Length ?? 0
+                    }).ToList(),
+                    Busnies = allBusnies.Select(b => new { 
+                        b.Id, 
+                        b.Ad, 
+                        b.Email, 
+                        b.EmailDogrulandi, 
+                        b.OlusturmaTarihi,
+                        PasswordLength = b.Sifre?.Length ?? 0
+                    }).ToList(),
+                    Rezervasyonlar = allRezervasyonlar.Select(r => new { 
+                        r.Id, 
+                        r.MusteriEmail, 
+                        r.Durum, 
+                        r.Tarih 
+                    }).ToList(),
+                    TotalUsers = allUsers.Count,
+                    TotalBusnies = allBusnies.Count,
+                    TotalRezervasyonlar = allRezervasyonlar.Count
                 };
 
-                var createdUser = await _mongoDBService.CreateUserAsync(testUser);
-                
-                // Test retrieving the user
-                var retrievedUser = await _mongoDBService.GetUserByEmailAsync(testUser.Email);
-                
-                if (retrievedUser != null && retrievedUser.Id == createdUser.Id)
-                {
-                    return Json(new { 
-                        success = true, 
-                        message = "MongoDB connection and operations working correctly",
-                        userId = createdUser.Id,
-                        email = createdUser.Email
-                    });
-                }
-                else
-                {
-                    return Json(new { 
-                        success = false, 
-                        message = "MongoDB operations failed - user retrieval failed" 
-                    });
-                }
+                return Json(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"MongoDB test failed: {ex.Message}");
+                return Json(new { error = ex.Message });
+            }
+        }
+
+        public async Task<IActionResult> CreateTestUser()
+        {
+            try
+            {
+                var testUser = new User
+                {
+                    Ad = "Test",
+                    Soyad = "Kullanıcı",
+                    Email = "test@example.com",
+                    Sifre = BCrypt.Net.BCrypt.HashPassword("123456"),
+                    Telefon = "5551234567",
+                    DogumTarihi = DateTime.Now.AddYears(-25),
+                    Cinsiyet = "Erkek",
+                    HaberBulteni = false,
+                    EmailDogrulandi = true, // Test için doğrulanmış olarak ayarla
+                    EmailDogrulamaKodu = "123456",
+                    OlusturmaTarihi = DateTime.UtcNow,
+                    GuncellemeTarihi = DateTime.UtcNow
+                };
+
+                var existingUser = await _mongoDBService.GetUserByEmailAsync(testUser.Email);
+                if (existingUser != null)
+                {
+                    return Json(new { 
+                        success = false, 
+                        message = "Test kullanıcısı zaten mevcut",
+                        email = testUser.Email,
+                        password = "123456"
+                    });
+                }
+
+                var createdUser = await _mongoDBService.CreateUserAsync(testUser);
+                
+                return Json(new { 
+                    success = true, 
+                    message = "Test kullanıcısı oluşturuldu",
+                    email = testUser.Email,
+                    password = "123456",
+                    userId = createdUser.Id
+                });
+            }
+            catch (Exception ex)
+            {
                 return Json(new { 
                     success = false, 
-                    message = $"MongoDB test failed: {ex.Message}" 
+                    message = $"Test kullanıcısı oluşturulurken hata: {ex.Message}" 
                 });
             }
         }
@@ -599,6 +665,37 @@ namespace RezervasyonSistemi.Controllers
             catch
             {
                 return false;
+            }
+        }
+
+        // Test email functionality
+        [HttpGet]
+        public async Task<IActionResult> TestEmail(string email = "test@example.com")
+        {
+            try
+            {
+                var emailBody = $@"
+                    <h2>E-posta Test</h2>
+                    <p>Bu bir test e-postasıdır.</p>
+                    <p>Gönderim zamanı: {DateTime.Now}</p>
+                    <p>Test başarılı!</p>";
+
+                await _emailService.SendEmailAsync(email, "RezerveHub - E-posta Test", emailBody);
+                
+                return Json(new { 
+                    success = true, 
+                    message = $"Test e-postası {email} adresine başarıyla gönderildi.",
+                    timestamp = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Test email error: {ex.Message}");
+                return Json(new { 
+                    success = false, 
+                    message = $"E-posta gönderimi başarısız: {ex.Message}",
+                    timestamp = DateTime.Now
+                });
             }
         }
     }

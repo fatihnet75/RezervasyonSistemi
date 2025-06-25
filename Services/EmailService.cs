@@ -22,9 +22,11 @@ public class EmailService : IEmailService
     {
         var smtpSettings = _configuration.GetSection("Email");
         var smtpServer = smtpSettings["SmtpServer"];
-        var smtpPort = int.Parse(smtpSettings["SmtpPort"]);
+        var smtpPort = int.Parse(smtpSettings["SmtpPort"] ?? "587");
         var smtpUsername = smtpSettings["Username"];
         var smtpPassword = smtpSettings["Password"];
+        var fromEmail = smtpSettings["FromEmail"];
+        var fromName = smtpSettings["FromName"];
 
         using var client = new SmtpClient(smtpServer, smtpPort)
         {
@@ -34,12 +36,12 @@ public class EmailService : IEmailService
 
         var message = new MailMessage
         {
-            From = new MailAddress(smtpUsername),
+            From = new MailAddress(fromEmail ?? smtpUsername, fromName ?? "Rezervasyon Sistemi"),
             Subject = subject,
             Body = body,
             IsBodyHtml = true
         };
-        message.To.Add(to);
+        message.To.Add(new MailAddress(to));
 
         await client.SendMailAsync(message);
     }

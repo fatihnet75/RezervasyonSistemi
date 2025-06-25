@@ -56,4 +56,7 @@ public class User
 
     [BsonElement("sonGirisTarihi")]
     public DateTime? SonGirisTarihi { get; set; }
+
+    [BsonElement("profilResmiUrl")]
+    public string ProfilResmiUrl { get; set; }
 } 

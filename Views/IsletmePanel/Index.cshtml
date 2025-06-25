@@ -1,5 +1,1038 @@
-@*
-    /Views/IsletmePanel/Index.cshtml
-*@
-<h2>İşletme Paneline Hoşgeldiniz!</h2>
-<p>Giriş veya şifre sıfırlama işleminiz başarılı.</p> 
+@{
+    var busnies = ViewBag.Busnies as RezervasyonSistemi.Models.Busnies;
+    var rezervasyonlar = ViewBag.Rezervasyonlar as List<RezervasyonSistemi.Models.Rezervasyon>;
+    string initials = busnies != null && !string.IsNullOrEmpty(busnies.Ad) ? string.Join("", busnies.Ad.Split(' ').Select(x => x[0])).ToUpper() : "B";
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İşletme Paneli - RezerveHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            letter-spacing: -1px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .profile-pic:hover {
+                transform: scale(1.1);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            }
+
+            .profile-pic input {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+                cursor: pointer;
+            }
+
+            .profile-pic img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 50%;
+            }
+
+        .user-name {
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(15px);
+        }
+
+            .logout-btn:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: translateY(-2px);
+            }
+
+        /* Main Content */
+        main {
+            padding-top: 100px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-left: 2rem;
+            padding-right: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease;
+        }
+
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(255, 107, 107, 0.1);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* New Service Form */
+        .service-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid rgba(255, 107, 107, 0.2);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+            .form-input:focus, .form-select:focus, .form-textarea:focus {
+                outline: none;
+                border-color: #ff6b6b;
+                box-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+                background: white;
+            }
+
+        .add-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+            .add-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            }
+
+        /* Reservations */
+        .reservation-item {
+            background: rgba(255, 107, 107, 0.05);
+            border: 1px solid rgba(255, 107, 107, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+            .reservation-item:hover {
+                background: rgba(255, 107, 107, 0.1);
+                transform: translateX(5px);
+            }
+
+        .reservation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .reservation-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .reservation-details {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.8rem;
+        }
+
+        .reservation-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .approve-btn {
+            background: #28a745;
+            color: white;
+        }
+
+            .approve-btn:hover {
+                background: #218838;
+                transform: translateY(-1px);
+            }
+
+        .reject-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+            .reject-btn:hover {
+                background: #c82333;
+                transform: translateY(-1px);
+            }
+
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+        }
+
+            .delete-btn:hover {
+                background: #ee5a52;
+                transform: translateY(-1px);
+            }
+
+        /* Profile Section */
+        .profile-section {
+            text-align: center;
+        }
+
+        .large-profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid rgba(255, 107, 107, 0.3);
+        }
+
+            .large-profile-pic:hover {
+                transform: scale(1.05);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            }
+
+            .large-profile-pic input {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+                cursor: pointer;
+            }
+
+            .large-profile-pic img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 50%;
+            }
+
+        .business-info {
+            margin-top: 1rem;
+        }
+
+        .business-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .business-details {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Full Width Section */
+        .full-width-section {
+            grid-column: 1 / -1;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid rgba(255, 107, 107, 0.1);
+        }
+
+        .tab {
+            padding: 0.8rem 1.5rem;
+            background: none;
+            border: none;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+            .tab.active {
+                color: #ff6b6b;
+                border-bottom-color: #ff6b6b;
+            }
+
+            .tab:hover {
+                color: #ff6b6b;
+            }
+
+        .tab-content {
+            display: none;
+        }
+
+            .tab-content.active {
+                display: block;
+            }
+
+        .reservation-grid {
+            display: grid;
+            gap: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Animations */
+        keyframes fadeInUp {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        /* Responsive */
+        medi (max-width: 1024px) {
+            .dashboard-grid
+
+        {
+            grid-template-columns: 1fr;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        }
+
+        media (max-width: 768px) {
+            main
+
+        {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        nav {
+            padding: 1rem;
+        }
+
+        .user-profile {
+            gap: 0.5rem;
+        }
+
+        .user-name {
+            display: none;
+        }
+
+        }
+
+        /* Empty states */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">RezerveHub</a>
+            <div class="user-profile">
+                <div class="profile-pic" id="headerProfilePic">
+                    <input type="file" accept="image/*" id="headerProfileInput">
+                    @if (!string.IsNullOrEmpty(busnies?.ProfilResmiUrl))
+                    {
+                        <img src="@busnies.ProfilResmiUrl" alt="Profil" />
+                    }
+                    else
+                    {
+                        <span id="headerInitials">@initials</span>
+                    }
+                </div>
+                <span class="user-name" id="businessName">@busnies?.Ad</span>
+                <button class="logout-btn" onclick="logout()">🚪 Çıkış</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="info-box" style="background:rgba(255,255,255,0.85);border-left:5px solid #ff6b6b;padding:1.2rem 2rem;margin-bottom:2rem;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.06);display:flex;align-items:center;gap:1rem;">
+            <span style="font-size:1.7rem;color:#ff6b6b;">ℹ️</span>
+            <div style="color:#333;font-size:1.08rem;font-weight:500;">
+                İlk işleminizi eklediğinizde işletme paneliniz aktif olarak kullanılmaya başlayacaktır.
+            </div>
+        </div>
+        <div class="dashboard-grid">
+            <!-- New Service Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">➕</div>
+                    <h2 class="card-title">Yeni Hizmet Ekle</h2>
+                </div>
+                <form class="service-form" onsubmit="addService(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" class="form-input" placeholder="Hizmet Adı" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="form-input" placeholder="Fiyat (₺)" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="number" class="form-input" placeholder="Süre (dakika)" required>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-select" required>
+                                <option value="">Kategori Seçin</option>
+                                <option value="kuafor">Kuaför</option>
+                                <option value="berber">Berber</option>
+                                <option value="guzellik">Güzellik</option>
+                                <option value="masaj">Masaj</option>
+                                <option value="diger">Diğer</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-textarea" placeholder="Hizmet Açıklaması"></textarea>
+                    </div>
+                    <button type="submit" class="add-btn">✨ Hizmet Ekle</button>
+                </form>
+            </div>
+
+            <!-- Profile Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">👤</div>
+                    <h2 class="card-title">İşletme Profili</h2>
+                </div>
+                <div class="profile-section">
+                    <div class="large-profile-pic" id="largeProfilePic">
+                        <input type="file" accept="image/*" id="largeProfileInput">
+                        @if (!string.IsNullOrEmpty(busnies?.ProfilResmiUrl))
+                        {
+                            <img src="@busnies.ProfilResmiUrl" alt="Profil" />
+                        }
+                        else
+                        {
+                            <span id="largeInitials">@initials</span>
+                        }
+                    </div>
+                    <div class="business-info">
+                        <h3 class="business-name">@busnies?.Ad</h3>
+                        <div class="business-details">
+                            📍 @busnies?.Adres<br>
+                            📧 @busnies?.Email<br>
+                            📞 @busnies?.Telefon<br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Reservations -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">⏳</div>
+                    <h2 class="card-title">Bekleyen Rezervasyonlar</h2>
+                </div>
+                <div class="reservation-grid" id="pendingReservations">
+                    @if (rezervasyonlar != null && rezervasyonlar.Any(r => r.Durum == "Bekliyor"))
+                    {
+                        foreach (var r in rezervasyonlar.Where(r => r.Durum == "Bekliyor"))
+                        {
+                            <div class="reservation-item">
+                                <div class="reservation-header">
+                                    <span class="customer-name">@r.MusteriAdSoyad</span>
+                                    <span class="reservation-status status-pending">Bekliyor</span>
+                                </div>
+                                <div class="reservation-details">
+                                    🗓️ @r.Tarih.ToString("dd MMMM yyyy, dddd")<br>
+                                    🕐 @r.Saat
+                                </div>
+                                <div class="reservation-actions">
+                                    <button class="action-btn approve-btn" onclick="updateReservationStatus(this, '@r.Id', 'Onaylandı')">✅ Onayla</button>
+                                    <button class="action-btn reject-btn" onclick="updateReservationStatus(this, '@r.Id', 'İptal')">❌ Reddet</button>
+                                    <button class="action-btn delete-btn" onclick="deleteReservation('@r.Id', '@r.MusteriAdSoyad')">🗑️ Sil</button>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-state">
+                            <div class="empty-state-icon">⏳</div>
+                            <p>Bekleyen rezervasyon yok.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- All Reservations -->
+            <div class="card full-width-section">
+                <div class="card-header">
+                    <div class="card-icon">📋</div>
+                    <h2 class="card-title">Tüm Rezervasyonlar</h2>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab(event, 'all')">Tümü</button>
+                    <button class="tab" onclick="switchTab(event, 'today')">Bugün</button>
+                    <button class="tab" onclick="switchTab(event, 'upcoming')">Yaklaşan</button>
+                    <button class="tab" onclick="switchTab(event, 'past')">Geçmiş</button>
+                </div>
+
+                <div class="tab-content active" id="all">
+                    <div class="reservation-grid">
+                        @if (rezervasyonlar != null && rezervasyonlar.Count > 0)
+                        {
+                            foreach (var r in rezervasyonlar)
+                            {
+                                <div class="reservation-item">
+                                    <div class="reservation-header">
+                                        <span class="customer-name">@r.MusteriAdSoyad</span>
+                                        <span class="reservation-status @(r.Durum == "Onaylandı" ? "status-approved" : r.Durum == "İptal" ? "status-rejected" : r.Durum == "Bekliyor" ? "status-pending" : "")">
+                                            @(r.Durum == "Onaylandı" ? "Onaylandı" : r.Durum == "İptal" ? "Reddedildi" : r.Durum)
+                                        </span>
+                                    </div>
+                                    <div class="reservation-details">
+                                        🗓️ @r.Tarih.ToString("dd MMMM yyyy, dddd")<br>
+                                        🕐 @r.Saat
+                                    </div>
+                                    <div class="reservation-actions">
+                                        <button class="action-btn delete-btn" onclick="deleteReservation('@r.Id', '@r.MusteriAdSoyad')">🗑️ Sil</button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <div class="empty-state-icon">📋</div>
+                                <p>Henüz rezervasyon yok.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="tab-content" id="today">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <p>Bugün için rezervasyon bulunmuyor.</p>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="upcoming">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⏳</div>
+                        <p>Yaklaşan rezervasyon bulunmuyor.</p>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="past">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⏳</div>
+                        <p>Geçmiş rezervasyon bulunmuyor.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hizmetler (Eski Hizmetler) Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🛠️</div>
+                    <h2 class="card-title">Hizmetlerim</h2>
+                </div>
+                <div>
+                    @if (busnies?.Hizmetler != null && busnies.Hizmetler.Count > 0)
+                    {
+                        <ul class="list-group mb-3">
+                        @foreach (var h in busnies.Hizmetler)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-semibold">@h.Ad</span>
+                                    <span class="text-muted small ms-2">(@h.Sure dk)</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline-primary btn-sm me-1" onclick="showEditServiceModal('@h.Ad', '@h.Sure')">Düzenle</button>
+                                    <button class="btn btn-outline-danger btn-sm" onclick="deleteService('@h.Ad', this)">Sil</button>
+                                </div>
+                            </li>
+                        }
+                        </ul>
+                    }
+                    else
+                    {
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🛠️</div>
+                            <p>Henüz hizmet eklenmemiş.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Hizmet Düzenle Modal -->
+            <div class="modal fade" id="editServiceModal" tabindex="-1" aria-labelledby="editServiceModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="editServiceModalLabel">Hizmeti Düzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form id="editServiceForm">
+                      <input type="hidden" id="oldServiceAd" name="oldAd" />
+                      <div class="mb-3">
+                        <label for="editServiceAd" class="form-label">Hizmet Adı</label>
+                        <input type="text" class="form-input" id="editServiceAd" name="yeniAd" required />
+                      </div>
+                      <div class="mb-3">
+                        <label for="editServiceSure" class="form-label">Süre (dk)</label>
+                        <input type="number" class="form-input" id="editServiceSure" name="yeniSure" min="1" required />
+                      </div>
+                      <button type="submit" class="btn btn-dark w-100">Kaydet</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Profil resmi yükleme (header ve profil kartı için ortak)
+        function setupProfilePicUpload(inputId, displayId, initialsId) {
+            const input = document.getElementById(inputId);
+            const display = document.getElementById(displayId);
+            const initials = document.getElementById(initialsId);
+            input.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('profilResmi', file);
+                    fetch('/IsletmePanel/ProfilResmiYukle', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.success && res.url) {
+                            // Tüm profil resimlerini güncelle
+                            document.querySelectorAll('.profile-pic img, .large-profile-pic img').forEach(img => img.src = res.url);
+                            // Eğer img yoksa, ekle
+                            document.querySelectorAll('.profile-pic, .large-profile-pic').forEach(div => {
+                                if (!div.querySelector('img')) {
+                                    const img = document.createElement('img');
+                                    img.src = res.url;
+                                    div.innerHTML = '';
+                                    div.appendChild(img);
+                                    div.appendChild(input);
+                                }
+                            });
+                        } else {
+                            alert(res.message || 'Yükleme başarısız!');
+                        }
+                    });
+                }
+            });
+        }
+
+        // Initialize profile picture uploads
+        setupProfilePicUpload('headerProfileInput', 'headerProfilePic', 'headerInitials');
+        setupProfilePicUpload('largeProfileInput', 'largeProfilePic', 'largeInitials');
+
+        // Add new service
+        function addService(event) {
+            event.preventDefault();
+            const form = event.target;
+            const inputs = form.querySelectorAll('.form-input, .form-select, .form-textarea');
+            const data = new URLSearchParams();
+            data.append('ad', inputs[0].value);
+            data.append('sure', inputs[2].value);
+            // Gerekirse diğer alanlar da eklenebilir (fiyat, kategori, açıklama)
+            fetch('/IsletmePanel/HizmetEkle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: data
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    location.reload();
+                } else {
+                    alert(res.message || 'Hizmet eklenemedi!');
+                }
+            });
+        }
+
+        // Reservation actions
+        function updateReservationStatus(button, rezervasyonId, yeniDurum) {
+            button.disabled = true;
+            fetch('/IsletmePanel/RezervasyonDurumGuncelle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'rezervasyonId=' + encodeURIComponent(rezervasyonId) + '&yeniDurum=' + encodeURIComponent(yeniDurum)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    // Başarıyla güncellendi, sayfayı yenile veya kartı güncelle
+                    location.reload();
+                } else {
+                    alert('Durum güncellenemedi!');
+                    button.disabled = false;
+                }
+            });
+        }
+
+        // Tab switching
+        function switchTab(event, tabName) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Add active class to clicked tab and corresponding content
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Çıkış yapmak istediğinizden emin misiniz?')) {
+                window.location.href = '/';
+            }
+        }
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards on load
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+
+            // Update time every minute
+            setInterval(updateTime, 60000);
+        });
+
+        function updateTime() {
+            const now = new Date();
+            const timeElements = document.querySelectorAll('.current-time');
+            const timeString = now.toLocaleTimeString('tr-TR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            timeElements.forEach(element => {
+                element.textContent = timeString;
+            });
+        }
+
+        // Real-time notifications (simulation)
+        setInterval(() => {
+            if (Math.random() < 0.1) { // 10% chance every 30 seconds
+                showNotification('Yeni rezervasyon talebi geldi! 🔔');
+            }
+        }, 30000);
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                z-index: 10000;
+                animation: slideInRight 0.5s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Add CSS for notification animation
+        const style = document.createElement('style');
+        style.textContent = `
+            keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Hizmet silme
+        function deleteService(ad, btn) {
+            if (!confirm('Bu hizmeti silmek istediğinize emin misiniz?')) return;
+            btn.disabled = true;
+            fetch('/IsletmePanel/HizmetSil', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'ad=' + encodeURIComponent(ad)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    btn.closest('li').remove();
+                } else {
+                    alert('Silinemedi: ' + (res.message || 'Hata'));
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        // Hizmet düzenle modalı aç
+        function showEditServiceModal(ad, sure) {
+            document.getElementById('oldServiceAd').value = ad;
+            document.getElementById('editServiceAd').value = ad;
+            document.getElementById('editServiceSure').value = sure;
+            var modal = new bootstrap.Modal(document.getElementById('editServiceModal'));
+            modal.show();
+        }
+
+        // Hizmet düzenle form submit
+        const editServiceForm = document.getElementById('editServiceForm');
+        if (editServiceForm) {
+            editServiceForm.onsubmit = function(e) {
+                e.preventDefault();
+                const data = new URLSearchParams(new FormData(editServiceForm));
+                fetch('/IsletmePanel/HizmetGuncelle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: data
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) {
+                        location.reload();
+                    } else {
+                        alert('Güncellenemedi: ' + (res.message || 'Hata'));
+                    }
+                });
+            }
+        }
+
+        // Rezervasyon silme fonksiyonu
+        function deleteReservation(reservationId, customerName) {
+            if (confirm(`"${customerName}" adına yapılan rezervasyonu silmek istediğinizden emin misiniz?`)) {
+                fetch('/IsletmePanel/RezervasyonSil', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'rezervasyonId=' + encodeURIComponent(reservationId)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Rezervasyon başarıyla silindi.');
+                        location.reload();
+                    } else {
+                        alert('Hata: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

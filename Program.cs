@@ -1,5 +1,8 @@
 using RezervasyonSistemi.Services;
 using RezervasyonSistemi.Controllers;
+using System.Net;
+
+ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
 var builder = WebApplication.CreateBuilder(args);
 
