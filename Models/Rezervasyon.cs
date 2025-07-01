@@ -13,6 +13,9 @@ namespace RezervasyonSistemi.Models
         [BsonElement("isletmeId")]
         public string IsletmeId { get; set; } // İşletme Id
 
+        [BsonElement("isletmeAd")]
+        public string IsletmeAd { get; set; }
+
         [BsonElement("musteriAdSoyad")]
         public string MusteriAdSoyad { get; set; }
 
@@ -20,6 +23,7 @@ namespace RezervasyonSistemi.Models
         public string MusteriEmail { get; set; }
 
         [BsonElement("tarih")]
+        [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
         public DateTime Tarih { get; set; }
 
         [BsonElement("saat")]
@@ -39,5 +43,8 @@ namespace RezervasyonSistemi.Models
 
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [BsonElement("olusturmaTarihi")]
+        public DateTime OlusturmaTarihi { get; set; }
     }
 } 

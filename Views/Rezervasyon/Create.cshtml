@@ -1,285 +1,566 @@
 @model RezervasyonSistemi.Models.Busnies
 @{
-    ViewBag.Title = "Rezervasyon Yap";
+    Layout = null;
     var isBusinessSelected = Model != null && !string.IsNullOrEmpty(Model.Id);
     var allBusinesses = ViewBag.AllBusinesses as List<RezervasyonSistemi.Models.Busnies>;
+    var currentUser = ViewBag.CurrentUser as RezervasyonSistemi.Models.User;
 }
 
-<style>
-    .create-container {
-        min-height: 100vh;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 2rem 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .create-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        overflow: hidden;
-        width: 100%;
-        max-width: 500px;
-        margin: 0 auto;
-    }
-    
-    .create-header {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-        color: white;
-        padding: 2rem;
-        text-align: center;
-    }
-    
-    .create-header h2 {
-        margin: 0;
-        font-size: 1.8rem;
-        font-weight: 600;
-    }
-    
-    .create-header p {
-        margin: 0.5rem 0 0 0;
-        opacity: 0.9;
-        font-size: 0.95rem;
-    }
-    
-    .create-body {
-        padding: 2rem;
-    }
-    
-    .business-grid {
-        display: grid;
-        gap: 1rem;
-        margin-bottom: 2rem;
-    }
-    
-    .business-card {
-        border: 2px solid #e9ecef;
-        border-radius: 12px;
-        padding: 1.5rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: white;
-    }
-    
-    .business-card:hover {
-        border-color: #ff6b6b;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(255,107,107,0.15);
-    }
-    
-    .business-card.selected {
-        border-color: #ff6b6b;
-        background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
-    }
-    
-    .business-name {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
-    }
-    
-    .business-info {
-        color: #6c757d;
-        font-size: 0.9rem;
-        line-height: 1.4;
-    }
-    
-    .business-address {
-        margin-top: 0.5rem;
-        font-weight: 500;
-        color: #495057;
-    }
-    
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-    
-    .form-label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: #2c3e50;
-        font-size: 0.95rem;
-    }
-    
-    .form-control {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border: 2px solid #e9ecef;
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: border-color 0.3s ease;
-        background: white;
-    }
-    
-    .form-control:focus {
-        outline: none;
-        border-color: #ff6b6b;
-        box-shadow: 0 0 0 3px rgba(255,107,107,0.1);
-    }
-    
-    .form-select {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border: 2px solid #e9ecef;
-        border-radius: 8px;
-        font-size: 1rem;
-        background: white;
-        cursor: pointer;
-        transition: border-color 0.3s ease;
-    }
-    
-    .form-select:focus {
-        outline: none;
-        border-color: #ff6b6b;
-        box-shadow: 0 0 0 3px rgba(255,107,107,0.1);
-    }
-    
-    .btn-primary {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-        border: none;
-        color: white;
-        padding: 0.875rem 2rem;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        width: 100%;
-        text-decoration: none;
-        display: inline-block;
-        text-align: center;
-    }
-    
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(255,107,107,0.3);
-        color: white;
-        text-decoration: none;
-    }
-    
-    .btn-secondary {
-        background: #6c757d;
-        border: none;
-        color: white;
-        padding: 0.875rem 2rem;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        width: 100%;
-        text-decoration: none;
-        display: inline-block;
-        text-align: center;
-        margin-top: 1rem;
-    }
-    
-    .btn-secondary:hover {
-        background: #5a6268;
-        color: white;
-        text-decoration: none;
-    }
-    
-    .selected-business {
-        background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
-        border: 2px solid #ff6b6b;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-    }
-    
-    .selected-business h4 {
-        color: #ff6b6b;
-        margin-bottom: 0.5rem;
-        font-size: 1.1rem;
-    }
-    
-    .selected-business p {
-        color: #6c757d;
-        margin: 0.25rem 0;
-        font-size: 0.9rem;
-    }
-    
-    .back-link {
-        color: #6c757d;
-        text-decoration: none;
-        font-size: 0.9rem;
-        display: inline-flex;
-        align-items: center;
-        margin-bottom: 1rem;
-        transition: color 0.3s ease;
-    }
-    
-    .back-link:hover {
-        color: #ff6b6b;
-        text-decoration: none;
-    }
-    
-    .back-link::before {
-        content: "←";
-        margin-right: 0.5rem;
-        font-weight: bold;
-    }
-    
-    media (max-width: 768px) {
-        .create-container {
-            padding: 1rem;
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezervasyon Oluştur - RezerveHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        .create-card {
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .main-container {
+            position: relative;
+            z-index: 1;
+            padding: 2rem 0;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 1000;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .back-button:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-3px);
+            text-decoration: none;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* İşletme Seçimi Sayfası */
+        .business-selection {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .filter-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin: 0 auto 3rem auto;
+            padding: 2rem 2.5rem;
+            position: relative;
+        }
+        
+        .filter-section::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            border-radius: 25px;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        .form-select, .form-control {
             border-radius: 15px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            padding: 12px 18px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
         }
         
-        .create-header {
-            padding: 1.5rem;
+        .form-select:focus, .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
         }
         
-        .create-header h2 {
-            font-size: 1.5rem;
+        .btn-secondary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 24px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
         
-        .create-body {
-            padding: 1.5rem;
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        .business-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2rem;
+            margin: 0;
+            min-height: 70vh;
+            align-items: stretch;
         }
         
         .business-card {
-            padding: 1rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2.5rem 1.5rem 2rem 1.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            min-height: 450px;
+            max-width: 550px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        
+        .business-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border-radius: 30px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .business-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 30px 80px rgba(102, 126, 234, 0.25);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        
+        .business-card:hover::before {
+            opacity: 1;
+        }
+        
+        .business-img-wrap {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .business-card:hover .business-img-wrap {
+            transform: scale(1.1);
+            box-shadow: 0 20px 45px rgba(102, 126, 234, 0.4);
+        }
+        
+        .business-img-wrap::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.7;
+        }
+        
+        .business-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+            transition: all 0.3s ease;
+        }
+        
+        .business-card:hover .business-img {
+            transform: scale(1.05);
+        }
+        
+        .business-content {
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 1;
         }
         
         .business-name {
-            font-size: 1.1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-    }
-</style>
-
-<div class="create-container">
-    <div class="create-card">
-        <div class="create-header">
-            <h2>@(isBusinessSelected ? "Rezervasyon Oluştur" : "İşletme Seçin")</h2>
-            <p>@(isBusinessSelected ? "Rezervasyon detaylarını doldurun" : "Rezervasyon yapmak istediğiniz işletmeyi seçin")</p>
-        </div>
         
-        <div class="create-body">
-            <a href="@Url.Action("Index", "Rezervasyon")" class="back-link">Rezervasyonlara Dön</a>
+        .business-info {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        
+        .business-info div {
+            margin-bottom: 0.5rem;
+            padding: 0.3rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .business-card:hover .business-info div {
+            color: #495057;
+        }
+        
+        .business-address {
+            color: #667eea;
+            font-size: 1.1rem;
+            margin-top: 0.8rem;
+            word-break: break-word;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        /* Rezervasyon Formu Sayfası */
+        .reservation-form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .selected-business-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 2rem;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .selected-business-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            border-radius: 25px;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        .selected-business-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .selected-business-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #667eea;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .selected-business-info h3 {
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .selected-business-info p {
+            color: #6c757d;
+            margin-bottom: 0.25rem;
+        }
+        
+        .reservation-form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 2.5rem;
+            position: relative;
+        }
+        
+        .reservation-form::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            border-radius: 25px;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .alert {
+            border-radius: 15px;
+            border: none;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+            color: white;
+        }
+        
+        .alert .btn-close {
+            filter: invert(1);
+        }
+        
+        .no-businesses {
+            text-align: center;
+            padding: 6rem 0 3rem 0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            margin: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .no-businesses i {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            opacity: 0.7;
+        }
+        
+        media (max-width: 900px) {
+            .business-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
             
-            @if (!isBusinessSelected)
-            {
-                <!-- İşletme Seçimi -->
-                <div class="business-grid">
+            .business-card {
+                min-height: 400px;
+                padding: 2rem 1rem 1.5rem 1rem;
+            }
+            
+            .business-img-wrap {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .back-button {
+                top: 1rem;
+                left: 1rem;
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+        }
+        
+        media (max-width: 600px) {
+            .business-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .business-card {
+                min-height: 350px;
+                padding: 2rem 1rem 1.5rem 1rem;
+                max-width: 100%;
+            }
+            
+            .business-img-wrap {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .filter-section {
+                padding: 1.5rem;
+                margin: 0 1rem 2rem 1rem;
+            }
+            
+            .reservation-form {
+                padding: 1.5rem;
+            }
+            
+            .selected-business-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="@Url.Action("Index", "Rezervasyon")" class="back-button">
+        <i class="fas fa-arrow-left me-2"></i>Rezervasyonlara Dön
+    </a>
+    
+    <div class="main-container">
+        @if (!isBusinessSelected)
+        {
+            <!-- İşletme Seçimi Sayfası -->
+            <div class="business-selection">
+                <div class="filter-section">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="cityFilter" class="form-label">Şehir</label>
+                            <select id="cityFilter" class="form-select" onchange="filterBusinesses()">
+                                <option value="">Tüm Şehirler</option>
+                                @{
+                                    var allCities = allBusinesses?.Select(b => b.Il).Distinct().OrderBy(c => c).ToList() ?? new List<string>();
+                                }
+                                @foreach (var city in allCities)
+                                {
+                                    <option value="@city">@city</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="districtFilter" class="form-label">İlçe</label>
+                            <select id="districtFilter" class="form-select" onchange="filterBusinesses()">
+                                <option value="">Tüm İlçeler</option>
+                                @{
+                                    var allDistricts = allBusinesses?.Select(b => b.Ilce).Distinct().OrderBy(d => d).ToList() ?? new List<string>();
+                                }
+                                @foreach (var district in allDistricts)
+                                {
+                                    <option value="@district">@district</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="button" class="btn btn-secondary w-100" onclick="clearFilters()">
+                                <i class="fas fa-times me-1"></i> Filtreleri Temizle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="business-grid" id="businessGrid">
                     @if (allBusinesses != null && allBusinesses.Any())
                     {
                         foreach (var business in allBusinesses)
                         {
-                            <div class="business-card" onclick="selectBusiness('@business.Id')">
-                                <div class="business-name">@business.Ad</div>
-                                <div class="business-info">
-                                    <div><strong>Telefon:</strong> @business.Telefon</div>
-                                    <div class="business-address">
-                                        <strong>Adres:</strong> @business.Adres, @business.Ilce/@business.Il
+                            var imgUrl = !string.IsNullOrEmpty(business.ProfilResmiUrl) ? business.ProfilResmiUrl : "/wwwroot/img/busnies/default.png";
+                            <div class="business-card" onclick="selectBusiness('@business.Id')" data-city="@business.Il" data-district="@business.Ilce">
+                                <div class="business-img-wrap">
+                                    <img src="@imgUrl" alt="@business.Ad" class="business-img" onerror="this.src='/wwwroot/img/busnies/default.png'" />
+                                </div>
+                                <div class="business-content">
+                                    <div class="business-name">@business.Ad</div>
+                                    <div class="business-info">
+                                        <div><i class="fas fa-map-marker-alt me-1"></i> @business.Ilce/@business.Il</div>
+                                        <div><i class="fas fa-phone me-1"></i> @business.Telefon</div>
+                                        <div class="business-address">
+                                            <i class="fas fa-location-dot me-1"></i> @business.Adres
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -287,50 +568,83 @@
                     }
                     else
                     {
-                        <div class="text-center" style="color: #6c757d; padding: 2rem;">
-                            <p>Henüz kayıtlı işletme bulunmuyor.</p>
+                        <div class="no-businesses">
+                            <i class="fas fa-store fa-4x mb-3 text-muted"></i>
+                            <h4 class="text-muted">Hiç işletme bulunamadı</h4>
+                            <p class="text-muted">Şu anda sistemde kayıtlı işletme yok.</p>
                         </div>
                     }
                 </div>
-            }
-            else
-            {
+                <div id="noResults" class="text-center" style="color: #6c757d; padding: 2rem; display: none;">
+                    <i class="fas fa-store-slash fa-3x mb-3"></i>
+                    <p>Seçilen kriterlere uygun işletme bulunamadı.</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Rezervasyon Formu Sayfası -->
+            <div class="reservation-form-container">
+                <!-- Hata ve Başarı Mesajları -->
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        @TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                
                 <!-- Seçili İşletme Bilgisi -->
-                <div class="selected-business">
-                    <h4>@Model.Ad</h4>
-                    <p><strong>Telefon:</strong> @Model.Telefon</p>
-                    <p><strong>Adres:</strong> @Model.Adres, @Model.Ilce/@Model.Il</p>
+                <div class="selected-business-card">
+                    <div class="selected-business-header">
+                        @{
+                            var imgUrl = !string.IsNullOrEmpty(Model.ProfilResmiUrl) ? Model.ProfilResmiUrl : "/wwwroot/img/busnies/default.png";
+                        }
+                        <img src="@imgUrl" alt="@Model.Ad" class="selected-business-img" onerror="this.src='/wwwroot/img/busnies/default.png'" />
+                        <div class="selected-business-info">
+                            <h3>@Model.Ad</h3>
+                            <p><i class="fas fa-phone me-1"></i> @Model.Telefon</p>
+                            <p><i class="fas fa-map-marker-alt me-1"></i> @Model.Adres, @Model.Ilce/@Model.Il</p>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Rezervasyon Formu -->
-                <form method="post" action="@Url.Action("Create", "Rezervasyon")">
+                <form method="post" action="@Url.Action("Create", "Rezervasyon")" onsubmit="return validateForm()" class="reservation-form">
+                    @Html.AntiForgeryToken()
                     <input type="hidden" name="id" value="@Model.Id" />
                     
                     <div class="form-group">
                         <label class="form-label">Ad Soyad</label>
-                        <input type="text" name="musteriAdSoyad" class="form-control" required />
+                        <input type="text" name="musteriAdSoyad" class="form-control" value="@(currentUser?.Ad + " " + currentUser?.Soyad)" readonly />
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">E-posta</label>
-                        <input type="email" name="musteriEmail" class="form-control" required />
+                        <input type="email" name="musteriEmail" class="form-control" value="@currentUser?.Email" readonly />
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">Tarih</label>
-                        <input type="date" name="date" class="form-control" required />
+                        <input type="date" name="date" id="dateInput" class="form-control" required min="@DateTime.Today.ToString("yyyy-MM-dd")" />
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">Saat</label>
-                        <select name="time" class="form-select" required>
-                            <option value="">Saat seçin</option>
-                            @for (int i = 8; i <= 20; i++)
-                            {
-                                <option value="@i:00">@i:00</option>
-                                <option value="@i:30">@i:30</option>
-                            }
+                        <select name="time" id="timeSelect" class="form-select" required disabled>
+                            <option value="">Önce tarih seçin</option>
                         </select>
+                        <small class="text-muted">Sadece müsait saatler gösterilir. Hizmet süresine göre hesaplanır.</small>
                     </div>
                     
                     <div class="form-group">
@@ -341,7 +655,7 @@
                             {
                                 foreach (var hizmet in Model.Hizmetler)
                                 {
-                                    <option value="@hizmet">@hizmet</option>
+                                    <option value="@hizmet.Ad">@hizmet.Ad (@hizmet.Sure dk)</option>
                                 }
                             }
                         </select>
@@ -352,17 +666,272 @@
                         <textarea name="notlar" class="form-control" rows="3" placeholder="Özel isteklerinizi buraya yazabilirsiniz..."></textarea>
                     </div>
                     
-                    <button type="submit" class="btn-primary">Rezervasyon Oluştur</button>
+                    <button type="submit" class="btn-primary" onclick="return validateForm()">
+                        <i class="fas fa-calendar-check me-2"></i>Rezervasyon Oluştur
+                    </button>
                 </form>
                 
-                <a href="@Url.Action("Create", "Rezervasyon")" class="btn-secondary">Farklı İşletme Seç</a>
-            }
-        </div>
+                <div class="text-center mt-3">
+                    <a href="@Url.Action("Create", "Rezervasyon")" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Farklı İşletme Seç
+                    </a>
+                </div>
+            </div>
+        }
     </div>
-</div>
 
-<script>
-    function selectBusiness(businessId) {
-        window.location.href = '@Url.Action("Create", "Rezervasyon")?id=' + businessId;
-    }
-</script> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function selectBusiness(businessId) {
+            window.location.href = '@Url.Action("Create", "Rezervasyon")?id=' + businessId;
+        }
+
+        // İşletme filtreleme fonksiyonu
+        function filterBusinesses() {
+            const cityFilter = document.getElementById('cityFilter').value;
+            const districtFilter = document.getElementById('districtFilter').value;
+            const businessCards = document.querySelectorAll('.business-card');
+            const noResults = document.getElementById('noResults');
+            let visibleCount = 0;
+
+            businessCards.forEach(card => {
+                const city = card.getAttribute('data-city');
+                const district = card.getAttribute('data-district');
+                
+                const cityMatch = !cityFilter || city === cityFilter;
+                const districtMatch = !districtFilter || district === districtFilter;
+                
+                if (cityMatch && districtMatch) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Sonuç yoksa mesaj göster
+            if (visibleCount === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        }
+
+        // Filtreleri temizle
+        function clearFilters() {
+            document.getElementById('cityFilter').value = '';
+            document.getElementById('districtFilter').value = '';
+            filterBusinesses();
+        }
+
+        // Tarih değiştiğinde dolu saatleri güncelle
+        document.getElementById('dateInput')?.addEventListener('change', function() {
+            const selectedDate = this.value;
+            const businessId = '@Model.Id';
+            const timeSelect = document.getElementById('timeSelect');
+            
+            console.log(`Tarih seçildi: ${selectedDate}`);
+            
+            // Geçmiş tarih kontrolü - timezone sorununu çözmek için
+            const today = new Date();
+            const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+            const todayStr = todayUTC.toISOString().split('T')[0]; // YYYY-MM-DD formatında bugünün tarihi
+            
+            console.log(`Bugünün tarihi (UTC): ${todayStr}`);
+            
+            if (selectedDate < todayStr) {
+                alert('Geçmiş tarih seçemezsiniz. Lütfen bugün veya gelecek bir tarih seçin.');
+                this.value = '';
+                timeSelect.innerHTML = '<option value="">Önce tarih seçin</option>';
+                timeSelect.disabled = true;
+                return;
+            }
+            
+            // Saat seçimini sıfırla ve devre dışı bırak
+            timeSelect.innerHTML = '<option value="">Tarih seçiliyor...</option>';
+            timeSelect.disabled = true;
+            
+            if (selectedDate && businessId) {
+                updateAvailableHours(businessId, selectedDate);
+            } else {
+                timeSelect.innerHTML = '<option value="">Önce tarih seçin</option>';
+                timeSelect.disabled = true;
+            }
+        });
+
+        // Saat seçimi değiştiğinde kontrol et
+        document.getElementById('timeSelect')?.addEventListener('change', function() {
+            const selectedTime = this.value;
+            const serviceSelect = document.querySelector('select[name="service"]');
+            const selectedService = serviceSelect ? serviceSelect.value : '';
+            
+            console.log(`Seçilen saat: ${selectedTime}, Seçilen hizmet: ${selectedService}`);
+            console.log(`Dolu saatler: ${currentDoluSaatler.join(', ')}`);
+            
+            if (selectedTime) {
+                // Sadece tam saatleri kabul et
+                const timeParts = selectedTime.split(':');
+                const hour = parseInt(timeParts[0]);
+                const minute = parseInt(timeParts[1]);
+                
+                if (minute !== 0) {
+                    alert('Sadece tam saatlerde rezervasyon alabilirsiniz. Lütfen tam saat seçin.');
+                    this.value = '';
+                    return false;
+                }
+                
+                // Dolu saat kontrolü
+                if (currentDoluSaatler.includes(selectedTime)) {
+                    alert(`Seçtiğiniz saat (${selectedTime}) dolu. Lütfen başka bir saat seçin.`);
+                    this.value = '';
+                    return false;
+                }
+            }
+        });
+
+        // Hizmet seçimi değiştiğinde saatleri tekrar kontrol et
+        document.querySelector('select[name="service"]')?.addEventListener('change', function() {
+            const selectedService = this.value;
+            const dateInput = document.getElementById('dateInput');
+            const selectedDate = dateInput ? dateInput.value : '';
+            const businessId = '@Model.Id';
+            
+            if (selectedService && selectedDate && businessId) {
+                // Hizmet değiştiğinde saatleri tekrar güncelle
+                updateAvailableHours(businessId, selectedDate);
+            }
+        });
+
+        // Global değişkenler
+        let currentDoluSaatler = [];
+        let currentHizmetler = [];
+        let currentBusinessId = '@Model.Id';
+
+        function updateAvailableHours(businessId, selectedDate) {
+            // Tarih formatını düzelt - timezone sorununu çözmek için
+            const dateParts = selectedDate.split('-');
+            const year = parseInt(dateParts[0]);
+            const month = parseInt(dateParts[1]);
+            const day = parseInt(dateParts[2]);
+            
+            // UTC tarih oluştur - timezone sorununu tamamen çözmek için
+            const utcDate = new Date(Date.UTC(year, month - 1, day));
+            const correctedDate = utcDate.toISOString().split('T')[0];
+            
+            console.log(`updateAvailableHours çağrıldı - İşletme: ${businessId}`);
+            console.log(`Orijinal tarih: ${selectedDate}`);
+            console.log(`UTC tarih: ${utcDate.toISOString()}`);
+            console.log(`Düzeltilmiş tarih: ${correctedDate}`);
+            
+            fetch(`/Rezervasyon/GetAvailableHours?businessId=${businessId}&date=${correctedDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    currentDoluSaatler = data.doluSaatler || [];
+                    currentHizmetler = data.hizmetler || [];
+                    const musaitSaatler = data.musaitSaatler || [];
+                    
+                    const timeSelect = document.getElementById('timeSelect');
+                    timeSelect.innerHTML = '<option value="">Saat seçin</option>';
+                    
+                    // Backend'den gelen müsait saatleri kullan
+                    musaitSaatler.forEach(saat => {
+                        const option = document.createElement('option');
+                        option.value = saat;
+                        option.textContent = saat;
+                        timeSelect.appendChild(option);
+                    });
+                    
+                    // Eğer hiç müsait saat yoksa
+                    if (musaitSaatler.length === 0) {
+                        timeSelect.innerHTML = '<option value="">Bu tarihte müsait saat yok</option>';
+                        timeSelect.disabled = true;
+                    } else {
+                        timeSelect.disabled = false;
+                    }
+                    
+                    console.log(`Seçilen tarih: ${selectedDate}`);
+                    console.log(`Dolu saatler: ${currentDoluSaatler.join(', ')}`);
+                    console.log(`Müsait saatler: ${musaitSaatler.join(', ')}`);
+                    console.log(`Müsait saat sayısı: ${musaitSaatler.length}`);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const timeSelect = document.getElementById('timeSelect');
+                    timeSelect.innerHTML = '<option value="">Hata oluştu</option>';
+                    timeSelect.disabled = true;
+                });
+        }
+
+        // Form validasyonu
+        function validateForm() {
+            const timeSelect = document.getElementById('timeSelect');
+            const serviceSelect = document.querySelector('select[name="service"]');
+            const dateInput = document.getElementById('dateInput');
+            const selectedTime = timeSelect.value;
+            const selectedService = serviceSelect.value;
+            const selectedDate = dateInput.value;
+            
+            // Boş alan kontrolü
+            if (!selectedDate) {
+                alert('Lütfen bir tarih seçin.');
+                dateInput.focus();
+                return false;
+            }
+            
+            // Geçmiş tarih kontrolü - timezone sorununu çözmek için
+            const today = new Date();
+            const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+            const todayStr = todayUTC.toISOString().split('T')[0]; // YYYY-MM-DD formatında bugünün tarihi
+            
+            console.log(`Form validasyonu - Seçilen tarih: ${selectedDate}, Bugünün tarihi (UTC): ${todayStr}`);
+            
+            if (selectedDate < todayStr) {
+                alert('Geçmiş tarih seçemezsiniz. Lütfen bugün veya gelecek bir tarih seçin.');
+                dateInput.focus();
+                return false;
+            }
+            
+            if (!selectedTime) {
+                alert('Lütfen bir saat seçin.');
+                timeSelect.focus();
+                return false;
+            }
+            
+            if (!selectedService) {
+                alert('Lütfen bir hizmet seçin.');
+                serviceSelect.focus();
+                return false;
+            }
+            
+            // Saat seçiminin disabled olup olmadığını kontrol et
+            if (timeSelect.disabled) {
+                alert('Lütfen önce tarih seçin ve müsait saatlerin yüklenmesini bekleyin.');
+                return false;
+            }
+            
+            // Tam saat kontrolü
+            if (selectedTime) {
+                const timeParts = selectedTime.split(':');
+                const hour = parseInt(timeParts[0]);
+                const minute = parseInt(timeParts[1]);
+                
+                if (minute !== 0) {
+                    alert('Sadece tam saatlerde rezervasyon alabilirsiniz. Lütfen tam saat seçin.');
+                    timeSelect.focus();
+                    return false;
+                }
+                
+                // Dolu saat kontrolü
+                if (currentDoluSaatler.includes(selectedTime)) {
+                    alert(`Seçtiğiniz saat (${selectedTime}) dolu. Lütfen başka bir saat seçin.`);
+                    timeSelect.focus();
+                    return false;
+                }
+            }
+            
+            return true; // Form gönderilebilir
+        }
+    </script>
+</body>
+</html> 

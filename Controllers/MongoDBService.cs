@@ -13,6 +13,7 @@ namespace RezervasyonSistemi.Controllers
         private readonly IMongoCollection<Busnies> _busnies;
         private readonly IMongoCollection<BusniesPasswordResetRequest> _busniesPasswordResetRequests;
         private readonly IMongoCollection<Rezervasyon> _rezervasyonlar;
+        private readonly IMongoCollection<AccountDeletionRequest> _accountDeletionRequests;
         private readonly ILogger<MongoDBService> _logger;
 
         public MongoDBService(IConfiguration configuration, ILogger<MongoDBService> logger)
@@ -34,6 +35,7 @@ namespace RezervasyonSistemi.Controllers
                 _busnies = database.GetCollection<Busnies>("Busnies");
                 _busniesPasswordResetRequests = database.GetCollection<BusniesPasswordResetRequest>("BusniesPasswordResetRequest");
                 _rezervasyonlar = database.GetCollection<Rezervasyon>("Rezervasyon");
+                _accountDeletionRequests = database.GetCollection<AccountDeletionRequest>("AccountDeletionRequest");
                 
                 // Test the connection
                 var pingResult = database.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Result;
@@ -397,7 +399,11 @@ namespace RezervasyonSistemi.Controllers
 
         public async Task<Rezervasyon> CreateRezervasyonAsync(Rezervasyon rezervasyon)
         {
+            _logger.LogInformation($"CreateRezervasyonAsync - Kaydedilen tarih: {rezervasyon.Tarih:yyyy-MM-dd}, Saat: {rezervasyon.Saat}");
+            
             await _rezervasyonlar.InsertOneAsync(rezervasyon);
+            
+            _logger.LogInformation($"CreateRezervasyonAsync - Rezervasyon başarıyla kaydedildi. ID: {rezervasyon.Id}");
             return rezervasyon;
         }
 
@@ -442,7 +448,24 @@ namespace RezervasyonSistemi.Controllers
             return result.ModifiedCount > 0;
         }
 
+
+
         public async Task<bool> DeleteRezervasyonAsync(string rezervasyonId)
+        {
+            try
+            {
+                var filter = Builders<Rezervasyon>.Filter.Eq(r => r.Id, rezervasyonId);
+                var result = await _rezervasyonlar.DeleteOneAsync(filter);
+                return result.DeletedCount > 0;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error deleting reservation {rezervasyonId}: {ex.Message}");
+                throw new Exception($"Rezervasyon silinirken hata: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> RezervasyonSilAsync(string rezervasyonId)
         {
             try
             {
@@ -462,6 +485,115 @@ namespace RezervasyonSistemi.Controllers
             return await _rezervasyonlar.Find(_ => true).ToListAsync();
         }
 
+        // Belirli bir işletme için belirli tarih ve saatte dolu olan rezervasyonları getir
+        public async Task<List<Rezervasyon>> GetDoluSaatlerAsync(string isletmeId, DateTime tarih)
+        {
+            try
+            {
+                _logger.LogInformation($"GetDoluSaatlerAsync - İşletme: {isletmeId}, Tarih: {tarih:yyyy-MM-dd}");
+                
+                // UTC tarih oluştur
+                var utcTarih = new DateTime(tarih.Year, tarih.Month, tarih.Day, 0, 0, 0, DateTimeKind.Utc);
+                
+                _logger.LogInformation($"GetDoluSaatlerAsync - Aranan tarih: {tarih:yyyy-MM-dd}, UTC tarih: {utcTarih:yyyy-MM-dd}");
+                
+                var filter = Builders<Rezervasyon>.Filter.And(
+                    Builders<Rezervasyon>.Filter.Eq(r => r.IsletmeId, isletmeId),
+                    Builders<Rezervasyon>.Filter.Eq(r => r.Tarih, utcTarih),
+                    Builders<Rezervasyon>.Filter.Ne(r => r.Durum, "iptal") // İptal edilen rezervasyonları sayma
+                );
+                
+                var result = await _rezervasyonlar.Find(filter).ToListAsync();
+                _logger.LogInformation($"GetDoluSaatlerAsync - Bulunan rezervasyon sayısı: {result.Count}");
+                
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting busy hours for business {isletmeId} on {tarih}: {ex.Message}");
+                throw new Exception($"Dolu saatler alınırken hata: {ex.Message}");
+            }
+        }
+
+        // Belirli bir işletme için belirli tarihte dolu olan saatleri hesapla (hizmet süresine göre)
+        public async Task<List<string>> GetDoluSaatlerListesiAsync(string isletmeId, DateTime tarih)
+        {
+            try
+            {
+                var doluRezervasyonlar = await GetDoluSaatlerAsync(isletmeId, tarih);
+                var doluSaatler = new List<string>();
+
+                _logger.LogInformation($"İşletme {isletmeId} için {tarih:yyyy-MM-dd} tarihinde {doluRezervasyonlar.Count} rezervasyon bulundu");
+
+                foreach (var rezervasyon in doluRezervasyonlar)
+                {
+                    _logger.LogInformation($"Rezervasyon: {rezervasyon.Saat}, Hizmet: {rezervasyon.HizmetAd}, Süre: {rezervasyon.HizmetSuresi}, Durum: {rezervasyon.Durum}");
+                    
+                    // Sadece rezervasyonun başlangıç saatini dolu olarak işaretle
+                    if (TimeSpan.TryParse(rezervasyon.Saat, out TimeSpan baslangicSaati))
+                    {
+                        // Sadece tam saatleri kontrol et (8:00-19:00)
+                        if (baslangicSaati.Hours >= 8 && baslangicSaati.Hours < 20 && baslangicSaati.Minutes == 0)
+                        {
+                            var slotString = $"{baslangicSaati.Hours:D2}:{baslangicSaati.Minutes:D2}";
+                            
+                            if (!doluSaatler.Contains(slotString))
+                            {
+                                doluSaatler.Add(slotString);
+                            }
+                        }
+                    }
+                }
+
+                var result = doluSaatler.OrderBy(s => s).ToList();
+                _logger.LogInformation($"Hesaplanan dolu saatler: {string.Join(", ", result)}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error calculating busy hours for business {isletmeId} on {tarih}: {ex.Message}");
+                throw new Exception($"Dolu saatler hesaplanırken hata: {ex.Message}");
+            }
+        }
+
+        // Belirli bir işletme için belirli saatte rezervasyon alınabilir mi kontrol et
+        public async Task<bool> IsSaatMusaitAsync(string isletmeId, DateTime tarih, string saat, int hizmetSuresiDakika)
+        {
+            try
+            {
+                var doluRezervasyonlar = await GetDoluSaatlerAsync(isletmeId, tarih);
+                
+                if (TimeSpan.TryParse(saat, out TimeSpan yeniRezervasyonBaslangic))
+                {
+                    // Sadece tam saatleri kontrol et
+                    if (yeniRezervasyonBaslangic.Minutes != 0)
+                    {
+                        return false; // Sadece tam saatlerde rezervasyon alınabilir
+                    }
+                    
+                    // Aynı saatte başka rezervasyon var mı kontrol et
+                    foreach (var rezervasyon in doluRezervasyonlar)
+                    {
+                        if (TimeSpan.TryParse(rezervasyon.Saat, out TimeSpan mevcutBaslangic))
+                        {
+                            // Aynı saatte rezervasyon var mı kontrol et
+                            if (yeniRezervasyonBaslangic == mevcutBaslangic)
+                            {
+                                return false; // Aynı saatte rezervasyon var, müsait değil
+                            }
+                        }
+                    }
+                }
+                
+                return true; // Müsait
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error checking availability for business {isletmeId} on {tarih} at {saat}: {ex.Message}");
+                return false; // Hata durumunda güvenli tarafta kal
+            }
+        }
+
         public async Task<List<User>> GetAllUsersAsync()
         {
             try
@@ -472,6 +604,136 @@ namespace RezervasyonSistemi.Controllers
             {
                 throw new Exception($"Tüm kullanıcılar alınırken hata: {ex.Message}");
             }
+        }
+
+        // Account Deletion Methods
+        public async Task<AccountDeletionRequest> CreateAccountDeletionRequestAsync(string email, string userType, string userId)
+        {
+            try
+            {
+                // Delete any existing requests for this user
+                var existingFilter = Builders<AccountDeletionRequest>.Filter.Eq(r => r.Email, email);
+                await _accountDeletionRequests.DeleteManyAsync(existingFilter);
+
+                var verificationCode = GenerateDeletionVerificationCode();
+                var request = new AccountDeletionRequest
+                {
+                    Email = email,
+                    UserType = userType,
+                    UserId = userId,
+                    VerificationCode = verificationCode,
+                    CreatedAt = DateTime.UtcNow,
+                    ExpiresAt = DateTime.UtcNow.AddMinutes(15), // 15 minutes expiry
+                    IsVerified = false
+                };
+
+                await _accountDeletionRequests.InsertOneAsync(request);
+                return request;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Hesap silme isteği oluşturulurken hata: {ex.Message}");
+            }
+        }
+
+        public async Task<AccountDeletionRequest> GetAccountDeletionRequestAsync(string email)
+        {
+            try
+            {
+                var filter = Builders<AccountDeletionRequest>.Filter.Eq(r => r.Email, email);
+                return await _accountDeletionRequests.Find(filter).FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Hesap silme isteği aranırken hata: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> VerifyAccountDeletionRequestAsync(string email, string verificationCode)
+        {
+            try
+            {
+                var request = await GetAccountDeletionRequestAsync(email);
+                if (request == null) return false;
+
+                if (DateTime.UtcNow > request.ExpiresAt)
+                {
+                    await _accountDeletionRequests.DeleteOneAsync(r => r.Id == request.Id);
+                    return false;
+                }
+
+                if (request.VerificationCode != verificationCode) return false;
+
+                var update = Builders<AccountDeletionRequest>.Update
+                    .Set(r => r.IsVerified, true)
+                    .Set(r => r.VerifiedAt, DateTime.UtcNow);
+
+                var result = await _accountDeletionRequests.UpdateOneAsync(r => r.Id == request.Id, update);
+                return result.ModifiedCount > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Hesap silme doğrulaması yapılırken hata: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> DeleteAccountAsync(string email, string userType)
+        {
+            try
+            {
+                if (userType.ToLower() == "user")
+                {
+                    // Delete user's reservations first
+                    var reservationFilter = Builders<Rezervasyon>.Filter.Eq(r => r.MusteriEmail, email);
+                    await _rezervasyonlar.DeleteManyAsync(reservationFilter);
+
+                    // Delete user
+                    var userFilter = Builders<User>.Filter.Eq(u => u.Email, email);
+                    var result = await _users.DeleteOneAsync(userFilter);
+                    return result.DeletedCount > 0;
+                }
+                else if (userType.ToLower() == "business")
+                {
+                    // Get business first to get its ID
+                    var business = await GetBusniesByEmailAsync(email);
+                    if (business == null) return false;
+
+                    // Delete business's reservations first
+                    var reservationFilter = Builders<Rezervasyon>.Filter.Eq(r => r.IsletmeId, business.Id);
+                    await _rezervasyonlar.DeleteManyAsync(reservationFilter);
+
+                    // Delete business
+                    var businessFilter = Builders<Busnies>.Filter.Eq(b => b.Email, email);
+                    var result = await _busnies.DeleteOneAsync(businessFilter);
+                    return result.DeletedCount > 0;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Hesap silinirken hata: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> DeleteAccountDeletionRequestAsync(string email)
+        {
+            try
+            {
+                var filter = Builders<AccountDeletionRequest>.Filter.Eq(r => r.Email, email);
+                var result = await _accountDeletionRequests.DeleteOneAsync(filter);
+                return result.DeletedCount > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Hesap silme isteği silinirken hata: {ex.Message}");
+            }
+        }
+
+        private string GenerateDeletionVerificationCode()
+        {
+            Random random = new Random();
+            return random.Next(100000, 999999).ToString();
         }
     }
 }

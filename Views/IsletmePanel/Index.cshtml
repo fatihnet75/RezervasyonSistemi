@@ -9,6 +9,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>İşletme Paneli - RezerveHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -20,7 +22,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
             min-height: 100vh;
             overflow-x: hidden;
         }
@@ -40,11 +42,15 @@
 
         nav {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
             padding: 1rem 2rem;
             max-width: 1400px;
             margin: 0 auto;
+            min-height: 80px;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
         }
 
         .logo {
@@ -54,6 +60,8 @@
             text-decoration: none;
             letter-spacing: -1px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
+            margin-right: 2rem;
         }
 
         .user-profile {
@@ -65,6 +73,8 @@
             border-radius: 25px;
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.3);
+            min-width: 200px;
+            flex-shrink: 0;
         }
 
         .profile-pic {
@@ -108,6 +118,10 @@
             color: white;
             font-weight: 600;
             font-size: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
         }
 
         .logout-btn {
@@ -119,12 +133,106 @@
             cursor: pointer;
             transition: all 0.3s ease;
             backdrop-filter: blur(15px);
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-width: 100px;
+            text-align: center;
+            display: inline-block;
+            margin-left: 1rem;
         }
 
             .logout-btn:hover {
                 background: rgba(255, 255, 255, 0.3);
                 transform: translateY(-2px);
             }
+
+        .delete-account-btn {
+            background: rgba(220, 53, 69, 0.8);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(15px);
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-width: 100px;
+            text-align: center;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        .delete-account-btn:hover {
+            background: rgba(220, 53, 69, 1);
+            transform: translateY(-2px);
+        }
+
+        /* Account Deletion Modal Styles */
+        .deletion-step {
+            transition: all 0.3s ease;
+        }
+
+        .warning-icon, .success-icon, .final-warning-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            background: rgba(220, 53, 69, 0.1);
+            border: 3px solid #dc3545;
+        }
+
+        .success-icon {
+            background: rgba(13, 110, 253, 0.1);
+            border-color: #0d6efd;
+        }
+
+        .final-warning-icon {
+            background: rgba(220, 53, 69, 0.2);
+            border-color: #dc3545;
+            animation: pulse 2s infinite;
+        }
+
+        keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+
+        .modal-content {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            border-radius: 15px 15px 0 0;
+            border-bottom: none;
+        }
+
+        .form-control-lg {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-lg:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+
+        .btn-lg {
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-lg:hover {
+            transform: translateY(-2px);
+        }
 
         /* Main Content */
         main {
@@ -134,6 +242,87 @@
             padding-left: 2rem;
             padding-right: 2rem;
             padding-bottom: 2rem;
+        }
+
+        /* Responsive Header */
+        media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+                min-height: 70px;
+                justify-content: flex-start;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+                flex-shrink: 0;
+                margin-right: 1.5rem;
+            }
+            
+            .user-profile {
+                min-width: 150px;
+                padding: 0.4rem 0.8rem;
+                gap: 0.5rem;
+                flex-shrink: 0;
+            }
+            
+            .user-name {
+                max-width: 80px;
+                font-size: 0.9rem;
+            }
+            
+            .logout-btn {
+                min-width: 80px;
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+                margin-left: 0.8rem;
+            }
+            
+            .profile-pic {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+                flex-shrink: 0;
+            }
+        }
+
+        media (max-width: 480px) {
+            nav {
+                padding: 0.8rem;
+                min-height: 60px;
+                justify-content: flex-start;
+            }
+            
+            .logo {
+                font-size: 1.3rem;
+                flex-shrink: 0;
+                margin-right: 1rem;
+            }
+            
+            .user-profile {
+                min-width: 120px;
+                padding: 0.3rem 0.6rem;
+                gap: 0.4rem;
+                flex-shrink: 0;
+            }
+            
+            .user-name {
+                max-width: 60px;
+                font-size: 0.8rem;
+            }
+            
+            .logout-btn {
+                min-width: 70px;
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+                margin-left: 0.6rem;
+            }
+            
+            .profile-pic {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+                flex-shrink: 0;
+            }
         }
 
         .dashboard-grid {
@@ -453,22 +642,19 @@
 
         /* Animations */
         keyframes fadeInUp {
-            from
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
 
-        {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Responsive */
-        medi (max-width: 1024px) {
+        media (max-width: 1024px) {
             .dashboard-grid
 
         {
@@ -518,6 +704,7 @@
     </style>
 </head>
 <body>
+    @Html.AntiForgeryToken()
     <header>
         <nav>
             <a href="/" class="logo">RezerveHub</a>
@@ -534,7 +721,13 @@
                     }
                 </div>
                 <span class="user-name" id="businessName">@busnies?.Ad</span>
-                <button class="logout-btn" onclick="logout()">🚪 Çıkış</button>
+                <div class="d-flex gap-2">
+                    <form method="post" action="@Url.Action("Logout", "IsletmePanel")" style="display: inline;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="logout-btn">🚪 Çıkış</button>
+                    </form>
+                    <button class="delete-account-btn" onclick="showDeleteAccountModal()">🗑️ Hesabımı Sil</button>
+                </div>
             </div>
         </nav>
     </header>
@@ -562,20 +755,8 @@
                             <input type="number" class="form-input" placeholder="Fiyat (₺)" required>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <input type="number" class="form-input" placeholder="Süre (dakika)" required>
-                        </div>
-                        <div class="form-group">
-                            <select class="form-select" required>
-                                <option value="">Kategori Seçin</option>
-                                <option value="kuafor">Kuaför</option>
-                                <option value="berber">Berber</option>
-                                <option value="guzellik">Güzellik</option>
-                                <option value="masaj">Masaj</option>
-                                <option value="diger">Diğer</option>
-                            </select>
-                        </div>
+                    <div class="form-group">
+                        <input type="number" class="form-input" placeholder="Süre (dakika)" required>
                     </div>
                     <div class="form-group">
                         <textarea class="form-textarea" placeholder="Hizmet Açıklaması"></textarea>
@@ -631,7 +812,8 @@
                                 </div>
                                 <div class="reservation-details">
                                     🗓️ @r.Tarih.ToString("dd MMMM yyyy, dddd")<br>
-                                    🕐 @r.Saat
+                                    🕐 @r.Saat<br>
+                                    🛠️ @r.HizmetAd
                                 </div>
                                 <div class="reservation-actions">
                                     <button class="action-btn approve-btn" onclick="updateReservationStatus(this, '@r.Id', 'Onaylandı')">✅ Onayla</button>
@@ -680,7 +862,8 @@
                                     </div>
                                     <div class="reservation-details">
                                         🗓️ @r.Tarih.ToString("dd MMMM yyyy, dddd")<br>
-                                        🕐 @r.Saat
+                                        🕐 @r.Saat<br>
+                                        🛠️ @r.HizmetAd
                                     </div>
                                     <div class="reservation-actions">
                                         <button class="action-btn delete-btn" onclick="deleteReservation('@r.Id', '@r.MusteriAdSoyad')">🗑️ Sil</button>
@@ -699,23 +882,123 @@
                 </div>
 
                 <div class="tab-content" id="today">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📅</div>
-                        <p>Bugün için rezervasyon bulunmuyor.</p>
+                    <div class="reservation-grid">
+                        @{
+                            var todayReservations = rezervasyonlar?.Where(r => r.Tarih.Date == DateTime.Today.Date).ToList();
+                        }
+                        @if (todayReservations != null && todayReservations.Count > 0)
+                        {
+                            foreach (var r in todayReservations)
+                            {
+                                <div class="reservation-item">
+                                    <div class="reservation-header">
+                                        <span class="customer-name">@r.MusteriAdSoyad</span>
+                                        <span class="reservation-status @(r.Durum == "Onaylandı" ? "status-approved" : r.Durum == "İptal" ? "status-rejected" : r.Durum == "Bekliyor" ? "status-pending" : "")">
+                                            @(r.Durum == "Onaylandı" ? "Onaylandı" : r.Durum == "İptal" ? "Reddedildi" : r.Durum)
+                                        </span>
+                                    </div>
+                                    <div class="reservation-details">
+                                        🗓️ @r.Tarih.ToString("dd MMMM yyyy, dddd")<br>
+                                        🕐 @r.Saat<br>
+                                        🛠️ @r.HizmetAd
+                                    </div>
+                                    <div class="reservation-actions">
+                                        @if (r.Durum == "Bekliyor")
+                                        {
+                                            <button class="action-btn approve-btn" onclick="updateReservationStatus(this, '@r.Id', 'Onaylandı')">✅ Onayla</button>
+                                            <button class="action-btn reject-btn" onclick="updateReservationStatus(this, '@r.Id', 'İptal')">❌ Reddet</button>
+                                        }
+                                        <button class="action-btn delete-btn" onclick="deleteReservation('@r.Id', '@r.MusteriAdSoyad')">🗑️ Sil</button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <div class="empty-state-icon">📅</div>
+                                <p>Bugün için rezervasyon bulunmuyor.</p>
+                            </div>
+                        }
                     </div>
                 </div>
 
                 <div class="tab-content" id="upcoming">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">⏳</div>
-                        <p>Yaklaşan rezervasyon bulunmuyor.</p>
+                    <div class="reservation-grid">
+                        @{
+                            var upcomingReservations = rezervasyonlar?.Where(r => r.Tarih.Date > DateTime.Today.Date).ToList();
+                        }
+                        @if (upcomingReservations != null && upcomingReservations.Count > 0)
+                        {
+                            foreach (var r in upcomingReservations.OrderBy(r => r.Tarih))
+                            {
+                                <div class="reservation-item">
+                                    <div class="reservation-header">
+                                        <span class="customer-name">@r.MusteriAdSoyad</span>
+                                        <span class="reservation-status @(r.Durum == "Onaylandı" ? "status-approved" : r.Durum == "İptal" ? "status-rejected" : r.Durum == "Bekliyor" ? "status-pending" : "")">
+                                            @(r.Durum == "Onaylandı" ? "Onaylandı" : r.Durum == "İptal" ? "Reddedildi" : r.Durum)
+                                        </span>
+                                    </div>
+                                    <div class="reservation-details">
+                                        🗓️ @r.Tarih.ToString("dd MMMM yyyy, dddd")<br>
+                                        🕐 @r.Saat<br>
+                                        🛠️ @r.HizmetAd
+                                    </div>
+                                    <div class="reservation-actions">
+                                        @if (r.Durum == "Bekliyor")
+                                        {
+                                            <button class="action-btn approve-btn" onclick="updateReservationStatus(this, '@r.Id', 'Onaylandı')">✅ Onayla</button>
+                                            <button class="action-btn reject-btn" onclick="updateReservationStatus(this, '@r.Id', 'İptal')">❌ Reddet</button>
+                                        }
+                                        <button class="action-btn delete-btn" onclick="deleteReservation('@r.Id', '@r.MusteriAdSoyad')">🗑️ Sil</button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <div class="empty-state-icon">⏳</div>
+                                <p>Yaklaşan rezervasyon bulunmuyor.</p>
+                            </div>
+                        }
                     </div>
                 </div>
 
                 <div class="tab-content" id="past">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">⏳</div>
-                        <p>Geçmiş rezervasyon bulunmuyor.</p>
+                    <div class="reservation-grid">
+                        @{
+                            var pastReservations = rezervasyonlar?.Where(r => r.Tarih.Date < DateTime.Today.Date).ToList();
+                        }
+                        @if (pastReservations != null && pastReservations.Count > 0)
+                        {
+                            foreach (var r in pastReservations.OrderByDescending(r => r.Tarih))
+                            {
+                                <div class="reservation-item">
+                                    <div class="reservation-header">
+                                        <span class="customer-name">@r.MusteriAdSoyad</span>
+                                        <span class="reservation-status @(r.Durum == "Onaylandı" ? "status-approved" : r.Durum == "İptal" ? "status-rejected" : r.Durum == "Bekliyor" ? "status-pending" : "")">
+                                            @(r.Durum == "Onaylandı" ? "Onaylandı" : r.Durum == "İptal" ? "Reddedildi" : r.Durum)
+                                        </span>
+                                    </div>
+                                    <div class="reservation-details">
+                                        🗓️ @r.Tarih.ToString("dd MMMM yyyy, dddd")<br>
+                                        🕐 @r.Saat<br>
+                                        🛠️ @r.HizmetAd
+                                    </div>
+                                    <div class="reservation-actions">
+                                        <button class="action-btn delete-btn" onclick="deleteReservation('@r.Id', '@r.MusteriAdSoyad')">🗑️ Sil</button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <div class="empty-state-icon">📚</div>
+                                <p>Geçmiş rezervasyon bulunmuyor.</p>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -738,7 +1021,6 @@
                                     <span class="text-muted small ms-2">(@h.Sure dk)</span>
                                 </div>
                                 <div>
-                                    <button class="btn btn-outline-primary btn-sm me-1" onclick="showEditServiceModal('@h.Ad', '@h.Sure')">Düzenle</button>
                                     <button class="btn btn-outline-danger btn-sm" onclick="deleteService('@h.Ad', this)">Sil</button>
                                 </div>
                             </li>
@@ -755,35 +1037,129 @@
                 </div>
             </div>
 
-            <!-- Hizmet Düzenle Modal -->
-            <div class="modal fade" id="editServiceModal" tabindex="-1" aria-labelledby="editServiceModalLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="editServiceModalLabel">Hizmeti Düzenle</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <form id="editServiceForm">
-                      <input type="hidden" id="oldServiceAd" name="oldAd" />
-                      <div class="mb-3">
-                        <label for="editServiceAd" class="form-label">Hizmet Adı</label>
-                        <input type="text" class="form-input" id="editServiceAd" name="yeniAd" required />
-                      </div>
-                      <div class="mb-3">
-                        <label for="editServiceSure" class="form-label">Süre (dk)</label>
-                        <input type="number" class="form-input" id="editServiceSure" name="yeniSure" min="1" required />
-                      </div>
-                      <button type="submit" class="btn btn-dark w-100">Kaydet</button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
+
         </div>
     </main>
 
+    <!-- Hesap Silme Modalı (Rezervasyon/Index.cshtml ile aynı tasarım) -->
+    <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteAccountModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Hesap Silme
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="step1" class="deletion-step">
+                        <div class="text-center mb-4">
+                            <div class="warning-icon mb-3">
+                                <i class="fas fa-user-times fa-3x text-danger"></i>
+                            </div>
+                            <h4 class="text-danger">İşletme Hesabınızı Silmek İstiyor musunuz?</h4>
+                            <p class="text-muted">Bu işlem geri alınamaz ve tüm verileriniz kalıcı olarak silinecektir.</p>
+                        </div>
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-exclamation-triangle me-2"></i>Dikkat!</h6>
+                            <ul class="mb-0">
+                                <li>Tüm rezervasyonlarınız silinecek</li>
+                                <li>Profil bilgileriniz kalıcı olarak silinecek</li>
+                                <li>Bu işlem geri alınamaz</li>
+                            </ul>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="confirmDeletion">
+                            <label class="form-check-label" for="confirmDeletion">
+                                İşletme hesabımı silmek istediğimi anlıyorum ve bu işlemin geri alınamaz olduğunu kabul ediyorum
+                            </label>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-danger" onclick="requestDeletion()" id="requestDeletionBtn" disabled>
+                                <i class="fas fa-paper-plane me-2"></i>Doğrulama Kodu Gönder
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-2"></i>İptal
+                            </button>
+                        </div>
+                    </div>
+                    <div id="step2" class="deletion-step" style="display: none;">
+                        <div class="text-center mb-4">
+                            <div class="success-icon mb-3">
+                                <i class="fas fa-envelope fa-3x text-primary"></i>
+                            </div>
+                            <h4 class="text-primary">Doğrulama Kodu Gönderildi</h4>
+                            <p class="text-muted">E-posta adresinize 6 haneli doğrulama kodu gönderildi.</p>
+                        </div>
+                        <div class="mb-3">
+                            <label for="verificationCode" class="form-label">Doğrulama Kodu</label>
+                            <input type="text" class="form-control form-control-lg text-center" id="verificationCode" maxlength="6" placeholder="000000" style="letter-spacing: 0.5em; font-size: 1.2rem;">
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-primary" onclick="verifyDeletion()" id="verifyDeletionBtn">
+                                <i class="fas fa-check me-2"></i>Doğrula
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="backToStep1()">
+                                <i class="fas fa-arrow-left me-2"></i>Geri
+                            </button>
+                        </div>
+                    </div>
+                    <div id="step3" class="deletion-step" style="display: none;">
+                        <div class="text-center mb-4">
+                            <div class="final-warning-icon mb-3">
+                                <i class="fas fa-exclamation-triangle fa-3x text-danger"></i>
+                            </div>
+                            <h4 class="text-danger">Son Uyarı!</h4>
+                            <p class="text-muted">Doğrulama başarılı. İşletme hesabınızı kalıcı olarak silmek üzeresiniz.</p>
+                        </div>
+                        <div class="alert alert-danger">
+                            <h6><i class="fas fa-skull-crossbones me-2"></i>Bu İşlem Geri Alınamaz!</h6>
+                            <p class="mb-0">Tüm verileriniz ve rezervasyonlarınız kalıcı olarak silinecektir.</p>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-danger btn-lg" onclick="confirmDeletion()" id="confirmDeletionBtn">
+                                <i class="fas fa-trash me-2"></i>İşletme Hesabımı Kalıcı Olarak Sil
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="backToStep1()">
+                                <i class="fas fa-times me-2"></i>İptal Et
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Geri/ileri tuşlarıyla erişimi engelle
+        window.history.pushState(null, null, window.location.href);
+        window.onpopstate = function () {
+            window.history.pushState(null, null, window.location.href);
+            // Kullanıcıyı uyar
+            alert('Geri/ileri tuşları kullanılamaz. Lütfen menüden navigasyon yapın.');
+        };
+
+        // Sayfa yüklendiğinde history'yi temizle
+        window.addEventListener('load', function() {
+            // Sayfa yüklendiğinde history'yi temizle
+            if (window.history && window.history.pushState) {
+                window.history.pushState(null, null, window.location.href);
+            }
+        });
+
+        // Çıkış butonunu düzelt
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutForm = document.querySelector('form[action*="Logout"]');
+            if (logoutForm) {
+                logoutForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (confirm('Çıkış yapmak istediğinizden emin misiniz?')) {
+                        this.submit();
+                    }
+                });
+            }
+        });
         // Profil resmi yükleme (header ve profil kartı için ortak)
         function setupProfilePicUpload(inputId, displayId, initialsId) {
             const input = document.getElementById(inputId);
@@ -833,6 +1209,11 @@
             const data = new URLSearchParams();
             data.append('ad', inputs[0].value);
             data.append('sure', inputs[2].value);
+            
+            // CSRF token al
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            data.append('__RequestVerificationToken', token);
+            
             // Gerekirse diğer alanlar da eklenebilir (fiyat, kategori, açıklama)
             fetch('/IsletmePanel/HizmetEkle', {
                 method: 'POST',
@@ -852,10 +1233,14 @@
         // Reservation actions
         function updateReservationStatus(button, rezervasyonId, yeniDurum) {
             button.disabled = true;
+            
+            // CSRF token al
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            
             fetch('/IsletmePanel/RezervasyonDurumGuncelle', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'rezervasyonId=' + encodeURIComponent(rezervasyonId) + '&yeniDurum=' + encodeURIComponent(yeniDurum)
+                body: 'rezervasyonId=' + encodeURIComponent(rezervasyonId) + '&yeniDurum=' + encodeURIComponent(yeniDurum) + '&__RequestVerificationToken=' + encodeURIComponent(token)
             })
             .then(r => r.json())
             .then(res => {
@@ -863,7 +1248,7 @@
                     // Başarıyla güncellendi, sayfayı yenile veya kartı güncelle
                     location.reload();
                 } else {
-                    alert('Durum güncellenemedi!');
+                    alert('Durum güncellenemedi: ' + (res.message || 'Hata'));
                     button.disabled = false;
                 }
             });
@@ -880,10 +1265,11 @@
             document.getElementById(tabName).classList.add('active');
         }
 
-        // Logout function
+        // Logout function - Artık form ile yapılıyor, bu fonksiyon kullanılmıyor
         function logout() {
             if (confirm('Çıkış yapmak istediğinizden emin misiniz?')) {
-                window.location.href = '/';
+                // Form submit edilecek
+                document.querySelector('form[action*="Logout"]').submit();
             }
         }
 
@@ -961,10 +1347,14 @@
         function deleteService(ad, btn) {
             if (!confirm('Bu hizmeti silmek istediğinize emin misiniz?')) return;
             btn.disabled = true;
+            
+            // CSRF token al
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            
             fetch('/IsletmePanel/HizmetSil', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'ad=' + encodeURIComponent(ad)
+                body: 'hizmetId=' + encodeURIComponent(ad) + '&__RequestVerificationToken=' + encodeURIComponent(token)
             })
             .then(r => r.json())
             .then(res => {
@@ -977,46 +1367,18 @@
             });
         }
 
-        // Hizmet düzenle modalı aç
-        function showEditServiceModal(ad, sure) {
-            document.getElementById('oldServiceAd').value = ad;
-            document.getElementById('editServiceAd').value = ad;
-            document.getElementById('editServiceSure').value = sure;
-            var modal = new bootstrap.Modal(document.getElementById('editServiceModal'));
-            modal.show();
-        }
-
-        // Hizmet düzenle form submit
-        const editServiceForm = document.getElementById('editServiceForm');
-        if (editServiceForm) {
-            editServiceForm.onsubmit = function(e) {
-                e.preventDefault();
-                const data = new URLSearchParams(new FormData(editServiceForm));
-                fetch('/IsletmePanel/HizmetGuncelle', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: data
-                })
-                .then(r => r.json())
-                .then(res => {
-                    if (res.success) {
-                        location.reload();
-                    } else {
-                        alert('Güncellenemedi: ' + (res.message || 'Hata'));
-                    }
-                });
-            }
-        }
-
         // Rezervasyon silme fonksiyonu
         function deleteReservation(reservationId, customerName) {
             if (confirm(`"${customerName}" adına yapılan rezervasyonu silmek istediğinizden emin misiniz?`)) {
+                // CSRF token al
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                
                 fetch('/IsletmePanel/RezervasyonSil', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
-                    body: 'rezervasyonId=' + encodeURIComponent(reservationId)
+                    body: 'rezervasyonId=' + encodeURIComponent(reservationId) + '&__RequestVerificationToken=' + encodeURIComponent(token)
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -1032,6 +1394,104 @@
                     alert('Bir hata oluştu. Lütfen tekrar deneyin.');
                 });
             }
+        }
+
+        // Modalı aç
+        function showDeleteAccountModal() {
+            const modal = new bootstrap.Modal(document.getElementById('deleteAccountModal'));
+            modal.show();
+            // Reset modal state
+            document.getElementById('confirmDeletion').checked = false;
+            document.getElementById('requestDeletionBtn').disabled = true;
+            document.getElementById('verificationCode').value = '';
+            showStep(1);
+        }
+        function showStep(stepNumber) {
+            document.querySelectorAll('.deletion-step').forEach(step => {
+                step.style.display = 'none';
+            });
+            document.getElementById(`step${stepNumber}`).style.display = 'block';
+        }
+        document.getElementById('confirmDeletion').addEventListener('change', function() {
+            document.getElementById('requestDeletionBtn').disabled = !this.checked;
+        });
+        document.getElementById('verificationCode').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '').substring(0, 6);
+        });
+        function requestDeletion() {
+            const email = '@(busnies?.Email ?? "")';
+            const userType = 'business';
+            fetch('/AccountDeletion/RequestDeletion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, userType: userType })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showStep(2);
+                } else {
+                    alert('Hata: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+            });
+        }
+        function verifyDeletion() {
+            const email = '@(busnies?.Email ?? "")';
+            const verificationCode = document.getElementById('verificationCode').value;
+            if (verificationCode.length !== 6) {
+                alert('Lütfen 6 haneli doğrulama kodunu girin.');
+                return;
+            }
+            fetch('/AccountDeletion/VerifyDeletion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, verificationCode: verificationCode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showStep(3);
+                } else {
+                    alert('Hata: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+            });
+        }
+        function confirmDeletion() {
+            const email = '@(busnies?.Email ?? "")';
+            if (confirm('İşletme hesabınızı kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!')) {
+                fetch('/AccountDeletion/ConfirmDeletion', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('İşletme hesabınız başarıyla silindi.');
+                        if (data.redirectUrl) {
+                            window.location.href = data.redirectUrl;
+                        }
+                    } else {
+                        alert('Hata: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+                });
+            }
+        }
+        function backToStep1() {
+            showStep(1);
+            document.getElementById('verificationCode').value = '';
         }
     </script>
 </body>

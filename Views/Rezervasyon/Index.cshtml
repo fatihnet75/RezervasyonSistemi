@@ -1,32 +1,12 @@
 ﻿@model RezervasyonSistemi.Controllers.RezervasyonViewModel
 @{
-    var cityQ = (string)ViewBag.SelectedCity;
-    var districtQ = (string)ViewBag.SelectedDistrict;
+    Layout = null;
     var statusQ = (string)ViewBag.SelectedStatus;
     var showPast = (bool)(ViewBag.ShowPast ?? true);
-    var allCities = Model.Businesses.Select(b => b.Il).Distinct().ToList();
-    var allDistricts = Model.Businesses.Select(b => b.Ilce).Distinct().ToList();
+    var currentUser = ViewBag.CurrentUser as RezervasyonSistemi.Models.User;
     
     // Rezervasyonları filtrele
     var filtered = Model.Reservations.AsEnumerable();
-    
-    // Şehir filtreleme
-    if (!string.IsNullOrEmpty(cityQ)) 
-    {
-        filtered = filtered.Where(r => {
-            var business = Model.Businesses.FirstOrDefault(b => b.Id == r.IsletmeId);
-            return business?.Il == cityQ;
-        });
-    }
-    
-    // İlçe filtreleme
-    if (!string.IsNullOrEmpty(districtQ)) 
-    {
-        filtered = filtered.Where(r => {
-            var business = Model.Businesses.FirstOrDefault(b => b.Id == r.IsletmeId);
-            return business?.Ilce == districtQ;
-        });
-    }
     
     // Durum filtreleme
     if (!string.IsNullOrEmpty(statusQ)) 
@@ -37,7 +17,8 @@
     // Zaman filtreleme - sadece "Gelecek Rezervasyonlar" seçildiğinde aktif
     if (!showPast) 
     {
-        filtered = filtered.Where(r => r.Tarih >= DateTime.Today);
+        var todayUtc = DateTime.UtcNow.Date;
+        filtered = filtered.Where(r => r.Tarih >= todayUtc);
     }
     
     var filteredList = filtered.ToList();
@@ -60,69 +41,98 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
         }
-
-        /* Kullanıcı Profil Header Stilleri */
-        .user-profile-header {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 0.5rem 0;
-            margin-bottom: 1rem;
+        
+        .container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
         }
-
-        .profile-container {
+        
+        /* Yeni Header Stilleri */
+        .user-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .user-profile {
             display: flex;
             align-items: center;
             gap: 1.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
         }
-
-        .profile-pic-container {
-            position: relative;
-        }
-
-        .profile-pic {
+        
+        .user-avatar {
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            object-fit: cover;
+            border: 4px solid #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .user-email {
+            color: #7f8c8d;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .user-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 0.25rem;
+        }
+        
+        .profile-upload {
             position: relative;
-            overflow: hidden;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
         }
-
-        .profile-pic:hover {
-            transform: scale(1.05);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .profile-pic img {
+        
+        .profile-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
+            cursor: pointer;
         }
-
-        .profile-initials {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: white;
-        }
-
+        
         .upload-overlay {
             position: absolute;
             top: 0;
@@ -130,62 +140,21 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
             transition: opacity 0.3s ease;
-            border-radius: 50%;
-        }
-
-        .profile-pic:hover .upload-overlay {
-            opacity: 1;
-        }
-
-        .upload-overlay i {
-            color: white;
-            font-size: 1.5rem;
-        }
-
-        .profile-info {
-            flex: 1;
-        }
-
-        .user-name {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: white;
-            margin: 0 0 0.3rem 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .user-email {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin: 0 0 1rem 0;
-        }
-
-        .profile-actions {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .profile-actions .btn {
-            border-radius: 20px;
-            padding: 0.4rem 1.2rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .profile-actions .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         
-        .container {
-            padding-top: 2rem;
-            padding-bottom: 2rem;
+        .profile-upload:hover .upload-overlay {
+            opacity: 1;
+        }
+        
+        .upload-icon {
+            color: white;
+            font-size: 1.2rem;
         }
         
         .card {
@@ -194,13 +163,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             backdrop-filter: blur(10px);
             background: rgba(255,255,255,0.95);
-        }
-        
-        .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px 15px 0 0 !important;
-            padding: 1.5rem;
         }
         
         .btn-primary {
@@ -291,158 +253,184 @@
             opacity: 0.9;
         }
         
-        /* Responsive Tasarım */
         media (max-width: 768px) {
             .container {
                 padding-top: 1rem;
                 padding-bottom: 1rem;
             }
             
-            .card-header {
-                padding: 1rem;
+            .user-profile {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .user-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .user-name {
+                font-size: 1.5rem;
+            }
+            
+            .user-stats {
+                justify-content: center;
+                gap: 1rem;
             }
             
             .stats-card {
                 margin-bottom: 1rem;
             }
+        }
 
-            .profile-container {
-                flex-direction: column;
-                text-align: center;
-                gap: 1rem;
-            }
+        /* Account Deletion Modal Styles */
+        .deletion-step {
+            transition: all 0.3s ease;
+        }
 
-            .user-name {
-                font-size: 1.5rem;
-            }
+        .warning-icon, .success-icon, .final-warning-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            background: rgba(220, 53, 69, 0.1);
+            border: 3px solid #dc3545;
+        }
 
-            .profile-pic {
-                width: 70px;
-                height: 70px;
-            }
+        .success-icon {
+            background: rgba(13, 110, 253, 0.1);
+            border-color: #0d6efd;
+        }
 
-            .profile-initials {
-                font-size: 1.5rem;
-            }
+        .final-warning-icon {
+            background: rgba(220, 53, 69, 0.2);
+            border-color: #dc3545;
+            animation: pulse 2s infinite;
+        }
 
-            .profile-actions {
-                justify-content: center;
-                flex-wrap: wrap;
+        keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
             }
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+            }
+        }
+
+        .modal-content {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            border-radius: 15px 15px 0 0;
+            border-bottom: none;
+        }
+
+        .form-control-lg {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-lg:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+
+        .btn-lg {
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-lg:hover {
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
-    <!-- Kullanıcı Profil Header -->
-    <header class="user-profile-header">
-        <div class="container">
-            <div class="profile-container">
-                <div class="profile-pic-container">
-                    <div class="profile-pic" id="profilePic" onclick="document.getElementById('profileInput').click()">
-                        @if (!string.IsNullOrEmpty(ViewBag.CurrentUser?.ProfilResmiUrl))
+    <div class="container">
+        @Html.AntiForgeryToken()
+        <!-- Yeni Kullanıcı Header -->
+        <div class="user-header">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="user-profile">
+                    <div class="profile-upload">
+                        @if (!string.IsNullOrEmpty(currentUser?.ProfilResmiUrl))
                         {
-                            <img src="@ViewBag.CurrentUser.ProfilResmiUrl" alt="Profil Resmi" id="profileImage">
+                            <img src="@currentUser.ProfilResmiUrl" alt="Profil Resmi" class="user-avatar" id="userAvatar">
                         }
                         else
                         {
-                            <div class="profile-initials" id="profileInitials">
-                                @{
-                                    var user = ViewBag.CurrentUser as RezervasyonSistemi.Models.User;
-                                    var initials = user != null ? string.Join("", user.Ad?.FirstOrDefault(), user.Soyad?.FirstOrDefault()).ToUpper() : "U";
-                                }
-                                @initials
+                            <div class="user-avatar" id="userAvatar">
+                                @(currentUser?.Ad?.Substring(0, 1).ToUpper() ?? "U")
                             </div>
                         }
                         <div class="upload-overlay">
-                            <i class="fas fa-camera"></i>
+                            <i class="fas fa-camera upload-icon"></i>
+                        </div>
+                        <input type="file" id="profileImageInput" accept="image/*" style="display: none;">
+                    </div>
+                    
+                    <div class="user-info">
+                        <div class="user-name">
+                            @(currentUser?.Ad ?? "Kullanıcı") @(currentUser?.Soyad ?? "")
+                        </div>
+                        <div class="user-email">
+                            <i class="fas fa-envelope me-2"></i>
+                            @(currentUser?.Email ?? "")
+                        </div>
+                        <div class="user-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">@total</div>
+                                <div class="stat-label">Toplam</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">@confirmed</div>
+                                <div class="stat-label">Onaylanan</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">@pending</div>
+                                <div class="stat-label">Bekleyen</div>
+                            </div>
                         </div>
                     </div>
-                    <input type="file" id="profileInput" accept="image/*" style="display: none;">
                 </div>
-                <div class="profile-info">
-                    <h1 class="user-name">@(ViewBag.CurrentUser?.Ad) @(ViewBag.CurrentUser?.Soyad)</h1>
-                    <p class="user-email">@ViewBag.CurrentUser?.Email</p>
-                    <div class="profile-actions">
-                        <a href="/" class="btn btn-outline-light btn-sm">
-                            <i class="fas fa-home me-1"></i>Ana Sayfa
-                        </a>
-                        <button class="btn btn-outline-light btn-sm" onclick="logout()">
-                            <i class="fas fa-sign-out-alt me-1"></i>Çıkış
+                
+                <!-- Çıkış ve Hesap Silme Butonları -->
+                <div class="d-flex gap-2">
+                    <form method="post" action="@Url.Action("Logout", "Rezervasyon")" style="display: inline;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-sign-out-alt me-2"></i>Çıkış Yap
                         </button>
-                    </div>
+                    </form>
+                    <button class="btn btn-danger" onclick="showDeleteAccountModal()">
+                        <i class="fas fa-user-times me-2"></i>Hesabımı Sil
+                    </button>
                 </div>
             </div>
         </div>
-    </header>
 
-    <div class="container">
 
-        <!-- İstatistikler -->
-        <div class="row mb-4">
-            <div class="col-md-3 col-sm-6 mb-3">
-                <div class="stats-card text-center">
-                    <div class="stats-number">@total</div>
-                    <div class="stats-label">Toplam Rezervasyon</div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6 mb-3">
-                <div class="stats-card text-center">
-                    <div class="stats-number">@confirmed</div>
-                    <div class="stats-label">Onaylanan</div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6 mb-3">
-                <div class="stats-card text-center">
-                    <div class="stats-number">@pending</div>
-                    <div class="stats-label">Bekleyen</div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6 mb-3">
-                <div class="stats-card text-center">
-                    <div class="stats-number">@rejected</div>
-                    <div class="stats-label">İptal</div>
-                </div>
-            </div>
-        </div>
 
         <!-- Filtreler -->
         <div class="filter-section">
             <form method="get" class="row g-3">
-                <div class="col-md-3">
-                    <label for="city" class="form-label">Şehir</label>
-                    <select name="city" id="city" class="form-select">
-                        <option value="">Tüm Şehirler</option>
-                        @foreach (var city in allCities)
-                        {
-                            if (city == cityQ)
-                            {
-                                <option value="@city" selected>@city</option>
-                            }
-                            else
-                            {
-                                <option value="@city">@city</option>
-                            }
-                        }
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="district" class="form-label">İlçe</label>
-                    <select name="district" id="district" class="form-select">
-                        <option value="">Tüm İlçeler</option>
-                        @foreach (var district in allDistricts)
-                        {
-                            if (district == districtQ)
-                            {
-                                <option value="@district" selected>@district</option>
-                            }
-                            else
-                            {
-                                <option value="@district">@district</option>
-                            }
-                        }
-                    </select>
-                </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <label for="status" class="form-label">Durum</label>
                     <select name="status" id="status" class="form-select">
                         <option value="">Tüm Durumlar</option>
@@ -472,7 +460,7 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <label for="showPast" class="form-label">Zaman</label>
                     <select name="showPast" id="showPast" class="form-select">
                         @if (!showPast)
@@ -493,7 +481,7 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-2 d-flex align-items-end">
+                <div class="col-md-4 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">
                         <i class="fas fa-filter me-1"></i> Filtrele
                     </button>
@@ -600,7 +588,7 @@
                                 
                                 <div class="text-end">
                                     <button class="btn btn-danger btn-sm" onclick="deleteReservation('@reservation.Id', '@reservation.MusteriAdSoyad')">
-                                        <i class="fas fa-trash me-1"></i>Sil
+                                        <i class="fas fa-times me-1"></i>Rezervasyon İptal
                                     </button>
                                 </div>
                             </div>
@@ -624,15 +612,146 @@
         }
     </div>
 
+    <!-- Account Deletion Modal -->
+    <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteAccountModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Hesap Silme
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="step1" class="deletion-step">
+                        <div class="text-center mb-4">
+                            <div class="warning-icon mb-3">
+                                <i class="fas fa-user-times fa-3x text-danger"></i>
+                            </div>
+                            <h4 class="text-danger">Hesabınızı Silmek İstiyor musunuz?</h4>
+                            <p class="text-muted">Bu işlem geri alınamaz ve tüm verileriniz kalıcı olarak silinecektir.</p>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-exclamation-triangle me-2"></i>Dikkat!</h6>
+                            <ul class="mb-0">
+                                <li>Tüm rezervasyonlarınız silinecek</li>
+                                <li>Profil bilgileriniz kalıcı olarak silinecek</li>
+                                <li>Bu işlem geri alınamaz</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="confirmDeletion">
+                            <label class="form-check-label" for="confirmDeletion">
+                                Hesabımı silmek istediğimi anlıyorum ve bu işlemin geri alınamaz olduğunu kabul ediyorum
+                            </label>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-danger" onclick="requestDeletion()" id="requestDeletionBtn" disabled>
+                                <i class="fas fa-paper-plane me-2"></i>Doğrulama Kodu Gönder
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-2"></i>İptal
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="step2" class="deletion-step" style="display: none;">
+                        <div class="text-center mb-4">
+                            <div class="success-icon mb-3">
+                                <i class="fas fa-envelope fa-3x text-primary"></i>
+                            </div>
+                            <h4 class="text-primary">Doğrulama Kodu Gönderildi</h4>
+                            <p class="text-muted">E-posta adresinize 6 haneli doğrulama kodu gönderildi.</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="verificationCode" class="form-label">Doğrulama Kodu</label>
+                            <input type="text" class="form-control form-control-lg text-center" id="verificationCode" 
+                                   maxlength="6" placeholder="000000" style="letter-spacing: 0.5em; font-size: 1.2rem;">
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-primary" onclick="verifyDeletion()" id="verifyDeletionBtn">
+                                <i class="fas fa-check me-2"></i>Doğrula
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="backToStep1()">
+                                <i class="fas fa-arrow-left me-2"></i>Geri
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="step3" class="deletion-step" style="display: none;">
+                        <div class="text-center mb-4">
+                            <div class="final-warning-icon mb-3">
+                                <i class="fas fa-exclamation-triangle fa-3x text-danger"></i>
+                            </div>
+                            <h4 class="text-danger">Son Uyarı!</h4>
+                            <p class="text-muted">Doğrulama başarılı. Hesabınızı kalıcı olarak silmek üzeresiniz.</p>
+                        </div>
+                        
+                        <div class="alert alert-danger">
+                            <h6><i class="fas fa-skull-crossbones me-2"></i>Bu İşlem Geri Alınamaz!</h6>
+                            <p class="mb-0">Tüm verileriniz ve rezervasyonlarınız kalıcı olarak silinecektir.</p>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-danger btn-lg" onclick="confirmDeletion()" id="confirmDeletionBtn">
+                                <i class="fas fa-trash me-2"></i>Hesabımı Kalıcı Olarak Sil
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="backToStep1()">
+                                <i class="fas fa-times me-2"></i>İptal Et
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
+        // Geri/ileri tuşlarıyla erişimi engelle
+        window.history.pushState(null, null, window.location.href);
+        window.onpopstate = function () {
+            window.history.pushState(null, null, window.location.href);
+            // Kullanıcıyı uyar
+            alert('Geri/ileri tuşları kullanılamaz. Lütfen menüden navigasyon yapın.');
+        };
+
+        // Sayfa yüklendiğinde history'yi temizle
+        window.addEventListener('load', function() {
+            // Sayfa yüklendiğinde history'yi temizle
+            if (window.history && window.history.pushState) {
+                window.history.pushState(null, null, window.location.href);
+            }
+        });
+
+        // Çıkış butonunu düzelt
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutForm = document.querySelector('form[action*="Logout"]');
+            if (logoutForm) {
+                logoutForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (confirm('Çıkış yapmak istediğinizden emin misiniz?')) {
+                        this.submit();
+                    }
+                });
+            }
+        });
         // Profil resmi yükleme
-        document.getElementById('profileInput').addEventListener('change', function(e) {
+        document.getElementById('profileImageInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
                 const formData = new FormData();
                 formData.append('profilResmi', file);
+                
+                // CSRF token al
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                formData.append('__RequestVerificationToken', token);
                 
                 fetch('/Rezervasyon/ProfilResmiYukle', {
                     method: 'POST',
@@ -641,34 +760,19 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Profil resmini güncelle
-                        const profilePic = document.getElementById('profilePic');
-                        const profileImage = document.getElementById('profileImage');
-                        const profileInitials = document.getElementById('profileInitials');
-                        
-                        if (profileImage) {
-                            profileImage.src = data.url;
+                        // Avatar'ı güncelle
+                        const avatar = document.getElementById('userAvatar');
+                        if (avatar.tagName === 'IMG') {
+                            avatar.src = data.url;
                         } else {
-                            // Eğer img yoksa oluştur
-                            const img = document.createElement('img');
-                            img.src = data.url;
-                            img.alt = 'Profil Resmi';
-                            img.id = 'profileImage';
-                            profilePic.innerHTML = '';
-                            profilePic.appendChild(img);
-                            
-                            // Upload overlay'i tekrar ekle
-                            const overlay = document.createElement('div');
-                            overlay.className = 'upload-overlay';
-                            overlay.innerHTML = '<i class="fas fa-camera"></i>';
-                            profilePic.appendChild(overlay);
+                            // Eğer div ise, img elementine çevir
+                            const newAvatar = document.createElement('img');
+                            newAvatar.src = data.url;
+                            newAvatar.alt = 'Profil Resmi';
+                            newAvatar.className = 'user-avatar';
+                            newAvatar.id = 'userAvatar';
+                            avatar.parentNode.replaceChild(newAvatar, avatar);
                         }
-                        
-                        // Initials'i gizle
-                        if (profileInitials) {
-                            profileInitials.style.display = 'none';
-                        }
-                        
                         alert('Profil resmi başarıyla güncellendi!');
                     } else {
                         alert('Hata: ' + data.message);
@@ -680,22 +784,148 @@
                 });
             }
         });
+        
+        // Profil resmi tıklama olayı
+        document.querySelector('.profile-upload').addEventListener('click', function() {
+            document.getElementById('profileImageInput').click();
+        });
 
-        // Çıkış fonksiyonu
-        function logout() {
-            if (confirm('Çıkış yapmak istediğinizden emin misiniz?')) {
-                window.location.href = '/Custommer/Login';
+        // Account Deletion Functions
+        function showDeleteAccountModal() {
+            const modal = new bootstrap.Modal(document.getElementById('deleteAccountModal'));
+            modal.show();
+            
+            // Reset modal state
+            document.getElementById('confirmDeletion').checked = false;
+            document.getElementById('requestDeletionBtn').disabled = true;
+            document.getElementById('verificationCode').value = '';
+            
+            // Show step 1
+            showStep(1);
+        }
+
+        function showStep(stepNumber) {
+            // Hide all steps
+            document.querySelectorAll('.deletion-step').forEach(step => {
+                step.style.display = 'none';
+            });
+            
+            // Show the specified step
+            document.getElementById(`step${stepNumber}`).style.display = 'block';
+        }
+
+        // Checkbox change event
+        document.getElementById('confirmDeletion').addEventListener('change', function() {
+            document.getElementById('requestDeletionBtn').disabled = !this.checked;
+        });
+
+        // Verification code input formatting
+        document.getElementById('verificationCode').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '').substring(0, 6);
+        });
+
+        function requestDeletion() {
+            const email = '@(currentUser?.Email ?? "")';
+            const userType = 'user';
+            
+            fetch('/AccountDeletion/RequestDeletion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email, userType: userType })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showStep(2);
+                } else {
+                    alert('Hata: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+            });
+        }
+
+        function verifyDeletion() {
+            const email = '@(currentUser?.Email ?? "")';
+            const verificationCode = document.getElementById('verificationCode').value;
+            
+            if (verificationCode.length !== 6) {
+                alert('Lütfen 6 haneli doğrulama kodunu girin.');
+                return;
+            }
+            
+            fetch('/AccountDeletion/VerifyDeletion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email, verificationCode: verificationCode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showStep(3);
+                } else {
+                    alert('Hata: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+            });
+        }
+
+        function confirmDeletion() {
+            const email = '@(currentUser?.Email ?? "")';
+            
+            if (confirm('Hesabınızı kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!')) {
+                fetch('/AccountDeletion/ConfirmDeletion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Hesabınız başarıyla silindi.');
+                        if (data.redirectUrl) {
+                            window.location.href = data.redirectUrl;
+                        }
+                    } else {
+                        alert('Hata: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+                });
             }
         }
 
+        function backToStep1() {
+            showStep(1);
+            document.getElementById('verificationCode').value = '';
+        }
+
+
         function deleteReservation(reservationId, customerName) {
             if (confirm(`"${customerName}" adına yapılan rezervasyonu silmek istediğinizden emin misiniz?`)) {
+                // CSRF token al
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                
                 fetch('/Rezervasyon/Delete', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
+                        'RequestVerificationToken': token
                     },
-                    body: 'rezervasyonId=' + encodeURIComponent(reservationId)
+                    body: 'rezervasyonId=' + encodeURIComponent(reservationId) + '&__RequestVerificationToken=' + encodeURIComponent(token)
                 })
                 .then(response => response.json())
                 .then(data => {
